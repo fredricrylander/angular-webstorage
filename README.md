@@ -13,67 +13,61 @@ All errors will be broadcast via the $rootScope under the name specified in the 
 
 The service provides the following generic methods:
 
-webStorage
-* isSupported     -- boolean flag indicating client support status (local or session storage)
-* add(key, value) -- add a value to storage under the specific key (storage according to 'order')
-* get(key)        -- return the specified value (storage according to 'order')
-* remove(key)     -- remove a key/value pair from storage (storage according to 'order')
-* clear()         -- remove all key/value pairs from storage (storage according to 'order')
+`webStorage`
+* `isSupported`     -- boolean flag indicating client support status (local or session storage)
+* `add(key, value)` -- add a value to storage under the specific key (storage according to 'order')
+* `get(key)`        -- return the specified value (storage according to 'order')
+* `remove(key)`     -- remove a key/value pair from storage (storage according to 'order')
+* `clear()`         -- remove all key/value pairs from storage (storage according to 'order')
 
 
 It also provides the following direct APIs:
 
-webStorage.local
-* isSupported     -- boolean flag indicating client support status (local storage)
-* add(key, value) -- add a value to storage under the specific key (local storage)
-* get(key)        -- return the specified value (local storage)
-* remove(key)     -- remove a key/value pair from storage (local storage)
-* clear()         -- remove all key/value pairs from storage (local storage)
+`webStorage.local`
+* `isSupported`     -- boolean flag indicating client support status (local storage)
+* `add(key, value)` -- add a value to storage under the specific key (local storage)
+* `get(key)`        -- return the specified value (local storage)
+* `remove(key)`     -- remove a key/value pair from storage (local storage)
+* `clear()`         -- remove all key/value pairs from storage (local storage)
 
-webStorage.session
-* isSupported     -- boolean flag indicating client support status (session storage)
-* add(key, value) -- add a value to storage under the specific key (session storage)
-* get(key)        -- return the specified value (session storage)
-* remove(key)     -- remove a key/value pair from storage (session storage)
-* clear()         -- remove all key/value pairs from storage (session storage)
+`webStorage.session`
+* `isSupported`     -- boolean flag indicating client support status (session storage)
+* `add(key, value)` -- add a value to storage under the specific key (session storage)
+* `get(key)`        -- return the specified value (session storage)
+* `remove(key)`     -- remove a key/value pair from storage (session storage)
+* `clear()`         -- remove all key/value pairs from storage (session storage)
 
-webStorage.memory
-* isSupported     -- boolean true, the in-memory storage is always supported
-* add(key, value) -- add a value to storage under the specific key (in-memory storage)
-* get(key)        -- return the specified value (in-memory storage)
-* remove(key)     -- remove a key/value pair from storage (in-memory storage)
-* clear()         -- remove all key/value pairs from storage (in-memory storage)
+`webStorage.memory`
+* `isSupported`     -- boolean true, the in-memory storage is always supported
+* `add(key, value)` -- add a value to storage under the specific key (in-memory storage)
+* `get(key)`        -- return the specified value (in-memory storage)
+* `remove(key)`     -- remove a key/value pair from storage (in-memory storage)
+* `clear()`         -- remove all key/value pairs from storage (in-memory storage)
 
-Author
-------
+## Author
 Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 
-Date
-----
+## Date
 2013-04-07
 
-Module Version
---------------
+## Module Version
 0.9
 
-Requirements
-------------
+## Requirements
 This module was built for AngularJS v1.0.5.
 
-Usage
------
+## Usage
 Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into any controller that needs to use it, e.g.:
 
     var myApp = angular.module('myApp', ['webStorageModule']);
     myApp.controller('myController', function ($scope, webStorage) { ... });
 
-License
-=======
-The MIT License
-Copyright (c) 2013 Fredric Rylander
+## License
+    The MIT License
+    Copyright (c) 2013 Fredric Rylander
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
