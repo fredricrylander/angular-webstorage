@@ -61,12 +61,12 @@
  * This module was built for AngularJS v1.0.5.
  * 
  * Usage
- * Add 'webStorageModule' to your app's dependencies. Then inject 'webStorage'
+ * Add `webStorageModule` to your app's dependencies. Then inject `webStorage`
  * into any controller that needs to use it, e.g.:
  * 
  * <code>
- * var myApp = angular.module('myApp', ['webStorageModule']);
- * myApp.controller('myController', function ($scope, webStorage) { ... });
+ *     var myApp = angular.module('myApp', ['webStorageModule']);
+ *     myApp.controller('myController', function ($scope, webStorage) { ... });
  * </code>
  * 
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
@@ -151,7 +151,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 		/** 
 		 * The local storage API.
 		 * The API is the same as the generic API for the webStore service, but will
-		 * only operate directly on the local store. Error will be broadcast via
+		 * only operate directly on the local store. Errors will be broadcast via
 		 * the $rootScope.
 		 */
 		local: {
@@ -165,7 +165,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 		/**
 		 * The session storage API.
 		 * The API is the same as the generic API for the webStore service, but will
-		 * only operate directly on the session store. Error will be broadcast via
+		 * only operate directly on the session store. Errors will be broadcast via
 		 * the $rootScope.
 		 */
 		session: {
@@ -179,7 +179,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 		/**
 		 * The in-memory API.
 		 * The API is the same as the generic API for the webStore service, but will
-		 * only operate directly on the in-memory store. Error will be broadcast via
+		 * only operate directly on the in-memory store. Errors will be broadcast via
 		 * the $rootScope.
 		 */
 		memory: {
