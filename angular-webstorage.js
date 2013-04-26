@@ -71,7 +71,7 @@
  * 
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
  * @date 2013-04-07
- * @version 0.9
+ * @version 0.9.1
  * 
  * 
  * The MIT License
