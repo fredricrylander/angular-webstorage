@@ -159,7 +159,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 			add: addToLocal,
 			get: getFromLocal,
 			remove: removeFromLocal,
-			clear: clearLocal,
+			clear: clearLocal
 		},
 		
 		/**
@@ -173,7 +173,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 			add: addToSession,
 			get: getFromSession,
 			remove: removeFromSession,
-			clear: clearSession,
+			clear: clearSession
 		},
 		
 		/**
@@ -187,8 +187,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 			add: addToMemory,
 			get: getFromMemory,
 			remove: removeFromMemory,
-			clear: clearMemory,
-		},
+			clear: clearMemory
+		}
 	};
 	
 	/**
