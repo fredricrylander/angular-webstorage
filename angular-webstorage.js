@@ -437,7 +437,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 			var prefixLength = prefix.length;
 			try {
 				for (var key in localStorage) 
-					if (key.substr(0, prefixLength) == prefix) 
+					if (key.substr(0, prefixLength) === prefix) 
 						localStorage.removeItem(key);
 			} catch (e) { return croak(e); }
 			return true;
@@ -461,7 +461,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 			var prefixLength = prefix.length;
 			try {
 				for (var key in sessionStorage) 
-					if (key.substr(0, prefixLength) == prefix) 
+					if (key.substr(0, prefixLength) === prefix) 
 						sessionStorage.removeItem(key);
 			} catch (e) { return croak(e); }
 			return true;
