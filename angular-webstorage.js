@@ -70,8 +70,8 @@
  * </code>
  * 
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
- * @date 2013-04-07
- * @version 0.9.1
+ * @date 2013-07-29
+ * @version 0.9.2
  * 
  * 
  * The MIT License
@@ -460,7 +460,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 		if (!!prefix) {
 			var prefixLength = prefix.length;
 			try {
-				for (var key in localStorage) 
+				for (var key in sessionStorage) 
 					if (key.substr(0, prefixLength) == prefix) 
 						sessionStorage.removeItem(key);
 			} catch (e) { return croak(e); }
