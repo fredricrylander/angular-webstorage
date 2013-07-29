@@ -48,10 +48,10 @@ It also provides the following direct APIs:
 Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 
 ## Date
-2013-04-07
+2013-07-29
 
 ## Module Version
-0.9.1
+0.9.2
 
 ## Requirements
 This module was built for AngularJS v1.0.5.
