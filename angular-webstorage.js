@@ -70,8 +70,8 @@
  * </code>
  * 
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
- * @date 2013-07-29
- * @version 0.9.2
+ * @date 2013-07-30
+ * @version 0.9.3
  * 
  * 
  * The MIT License
@@ -122,7 +122,7 @@ webStorageModule.constant('errorName', 'webStorage.notification.error');
 /**
  * Setup the webStorage service.
  */
-webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', function($rootScope, prefix, order) {
+webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorName', function($rootScope, prefix, order, errorName) {
 	/**
 	 * Boolean flag indicating client support for local storage.
 	 * @private 
@@ -522,7 +522,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', functio
 	 * @private
 	 */
 	function croak(error) {
-		$rootScope.$broadcast('webStorage.notification.error', error.title + ': ' + error.message);
+		$rootScope.$broadcast(errorName, error.title + ': ' + error.message);
 		return false;
 	}
 	
