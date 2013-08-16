@@ -19,6 +19,8 @@ The service provides the following generic methods:
 * `get(key)`        -- return the specified value (storage according to 'order')
 * `remove(key)`     -- remove a key/value pair from storage (storage according to 'order')
 * `clear()`         -- remove all key/value pairs from storage (storage according to 'order')
+* `removeFromAll(key)`     -- remove a key/value pair from all storage engines
+* `clearFromAll()`         -- remove all key/value pairs from all storage engines
 
 
 It also provides the following direct APIs:
@@ -48,10 +50,10 @@ It also provides the following direct APIs:
 Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 
 ## Date
-2013-07-30
+2013-08-16
 
 ## Module Version
-0.9.3
+0.9.4
 
 ## Requirements
 This module was built for AngularJS v1.0.5.
