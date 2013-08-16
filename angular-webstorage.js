@@ -271,6 +271,40 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 	};
 	
 	/**
+	 * Remove values from all of the key/value web stores.
+	 * 
+	 * @param {String} key Name of the value to remove.
+	 * @return {boolean} True on success, else false.
+	 */
+	webStorage.removeFromAll = function(key) {
+		var length = order.length;
+		for (var ith = 0; ith < length; ++ith) {
+			var engine = webStorage[order[ith]];
+			if (engine.isSupported)
+				engine.remove(key);
+		}
+		return true;
+	};
+
+	/**
+	 * Remove all values from all the key/value web stores.
+	 * 
+	 * If a prefix has been specified in the module constant 'prefix' then
+	 * only values with that specific prefix will be removed.
+	 *
+	 * @return {boolean} True on success, else false.
+	 */
+	webStorage.clearFromAll = function() {
+		var length = order.length;
+		for (var ith = 0; ith < length; ++ith) {
+			var engine = webStorage[order[ith]];
+			if (engine.isSupported)
+				engine.clear();
+		}
+		return true;
+	};
+	
+	/**
 	 * Add the specified key/value pair to the local web store.
 	 * 
 	 * NOTE: The web store API only specifies that implementations should be able to
