@@ -229,6 +229,30 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 		}
 		return null;
 	};
+	
+	/**
+	 * Getter for the key/value web store.
+	 * 
+	 * NOTE: This method will go through all the engines in 'order' to find the first non-null value
+	 * 
+	 * @param {String} key Name of the value to retrieve.
+	 * @return {mixed} The value previously added under the specified key, else null.
+	 */
+	webStorage.getFirstFromAll = function(key) {
+		var length = order.length;
+		for (var ith = 0; ith < length; ++ith) {
+			var engine = webStorage[order[ith]];
+			if (engine.isSupported) {
+				var value = engine.get(key);
+				if( typeof value === 'undefined' || value === null ) {
+					continue;
+				} else {
+					return value;
+				}
+			}
+		}
+		return null;
+	};
 
 	/**
 	 * Remove values from the key/value web store.
@@ -374,7 +398,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			try { 
 				var value = localStorage.getItem(prefix + key);
 				return value && JSON.parse(value); 
-			} catch (e) { return croak(e); }			
+			} catch (e) { croak(e); return null; }			
 		}
 		return null;
 	};
@@ -394,7 +418,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			try {
 				var value = sessionStorage.getItem(prefix + key);
 				return value && JSON.parse(value); 
-			} catch (e) { return croak(e); }
+			} catch (e) { croak(e); return null; }
 		}
 		return null;
 	};
