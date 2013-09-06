@@ -229,6 +229,30 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 		}
 		return null;
 	};
+	
+	/**
+	 * Getter for the key/value web store.
+	 * 
+	 * NOTE: This method will go through all the engines in 'order' to find the first non-null value
+	 * 
+	 * @param {String} key Name of the value to retrieve.
+	 * @return {mixed} The value previously added under the specified key, else null.
+	 */
+	webStorage.getFirstFromAll = function(key) {
+		var length = order.length;
+		for (var ith = 0; ith < length; ++ith) {
+			var engine = webStorage[order[ith]];
+			if (engine.isSupported) {
+				var value = engine.get(key);
+				if( typeof value === 'undefined' || value === null ) {
+					continue;
+				} else {
+					return value;
+				}
+			}
+		}
+		return null;
+	};
 
 	/**
 	 * Remove values from the key/value web store.
@@ -268,6 +292,40 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 				return engine.clear();
 		}
 		return false;
+	};
+	
+	/**
+	 * Remove values from all of the key/value web stores.
+	 * 
+	 * @param {String} key Name of the value to remove.
+	 * @return {boolean} True on success, else false.
+	 */
+	webStorage.removeFromAll = function(key) {
+		var length = order.length;
+		for (var ith = 0; ith < length; ++ith) {
+			var engine = webStorage[order[ith]];
+			if (engine.isSupported)
+				engine.remove(key);
+		}
+		return true;
+	};
+
+	/**
+	 * Remove all values from all the key/value web stores.
+	 * 
+	 * If a prefix has been specified in the module constant 'prefix' then
+	 * only values with that specific prefix will be removed.
+	 *
+	 * @return {boolean} True on success, else false.
+	 */
+	webStorage.clearFromAll = function() {
+		var length = order.length;
+		for (var ith = 0; ith < length; ++ith) {
+			var engine = webStorage[order[ith]];
+			if (engine.isSupported)
+				engine.clear();
+		}
+		return true;
 	};
 	
 	/**
@@ -340,7 +398,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			try { 
 				var value = localStorage.getItem(prefix + key);
 				return value && JSON.parse(value); 
-			} catch (e) { return croak(e); }			
+			} catch (e) { croak(e); return null; }			
 		}
 		return null;
 	};
@@ -360,7 +418,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			try {
 				var value = sessionStorage.getItem(prefix + key);
 				return value && JSON.parse(value); 
-			} catch (e) { return croak(e); }
+			} catch (e) { croak(e); return null; }
 		}
 		return null;
 	};
