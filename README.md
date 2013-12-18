@@ -3,7 +3,7 @@ WebStorage Service for AngularJS
 
 The webStorage service has both a generic and direct API. The generic API will check for client support and preferred order before altering a specific storage value, trying to degrade gracefully according to a set heuristic. The direct APIs works with either the client's local, session or the module's own in-memory storage engines.
 
-The selection heuristics for the generic API is mainly dictated by the order specified in the module constant `order` (defaults to `['local', 'session', 'memory']`.) If the client has no support for the specified storage engine then the service will try to fall back on the next specified engine and so forth.
+The selection heuristics for the generic API is mainly dictated by a set order (defaults to ['local', 'session', 'memory'].) If the client has no support for the specified storage engine then the service will try to fall back on the next specified engine and so forth.
 
 NOTE: The in-memory storage should really be seen as a last resort since all its values will be lost on page reload (somewhat negating the whole idea of client web storage!)
 
@@ -14,11 +14,12 @@ All errors will be broadcast via the $rootScope under the name specified in the 
 The service provides the following generic methods:
 
 `webStorage`
-* `isSupported`          -- boolean flag indicating client support status (local or session storage)
-* `add(key, value, all)` -- add a value to storage under the specific key (storage according to 'order')
-* `get(key, all)`        -- return the specified value (storage according to 'order')
-* `remove(key, all)`     -- remove a key/value pair from storage (storage according to 'order')
-* `clear(all)`           -- remove all key/value pairs from storage (storage according to 'order')
+* `isSupported`            -- boolean flag indicating client support status (local or session storage)
+* `add(key, value, all)`   -- add a value to storage under the specific key (storage according to 'order')
+* `get(key, all)`          -- return the specified value (storage according to 'order')
+* `remove(key, all)`       -- remove a key/value pair from storage (storage according to 'order')
+* `clear(all)`             -- remove all key/value pairs from storage (storage according to 'order')
+* `setStorageOrder(order)` -- alter the order by which storage models are iterated
 
 
 It also provides the following direct APIs:

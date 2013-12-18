@@ -7,11 +7,10 @@
  * heuristic. The direct APIs works with either the client's local, session 
  * or the module's own in-memory storage engines.
  * 
- * The selection heuristics for the generic API is mainly dictated by the 
- * order specified in the module constant 'order' (defaults to ['local', 
- * 'session', 'memory'].) If the client has no support for the specified 
- * storage engine then the service will try to fall back on the next specified
- * engine and so forth.
+ * The selection heuristics for the generic API is mainly dictated by a set
+ * order (defaults to ['local', 'session', 'memory'].) If the client has no
+ * support for the specified storage engine then the service will try to fall
+ * back on the next specified engine and so forth.
  * 
  * NOTE: The in-memory storage should really be seen as a last resort since 
  * all its values will be lost on page reload (somewhat negating the whole 
@@ -26,12 +25,12 @@
  * The service provides the following generic methods:
  * 
  * webStorage
- * - isSupported          -- boolean flag indicating client support status (local or session storage)
- * - add(key, value, all) -- add a value to storage under the specific key (storage according to 'order')
- * - get(key, all)        -- return the specified value (storage according to 'order')
- * - remove(key, all)     -- remove a key/value pair from storage (storage according to 'order')
- * - clear(all)           -- remove all key/value pairs from storage (storage according to 'order')
- * 
+ * - isSupported            -- boolean flag indicating client support status (local or session storage)
+ * - add(key, value, all)   -- add a value to storage under the specific key (storage according to 'order')
+ * - get(key, all)          -- return the specified value (storage according to 'order')
+ * - remove(key, all)       -- remove a key/value pair from storage (storage according to 'order')
+ * - clear(all)             -- remove all key/value pairs from storage (storage according to 'order')
+ * - setStorageOrder(order) -- alter the order by which storage models are iterated
  * 
  * It also provides the following direct APIs:
  * 
@@ -139,6 +138,8 @@
   *   use the first supported storage engine, while get(), remove() and clear()
   *   will query all supported storage engines. The update was inspired by
   *   David Rodriguez's (programmerdave) pull request.
+  * - Added setStorageOrder() so that users of the module may alter the order 
+  *   by which storage models are iterated.
   */
 
 /**
@@ -152,11 +153,13 @@ var webStorageModule = angular.module('webStorageModule', []);
 webStorageModule.constant('prefix', '');
 
 /**
- * The order in which the service selects what storage model to use. Note that the module
- * mimics localStorage and sessionStorage by using cookies if one, or both, of the web storage 
- * models aren't supported.
+ * The order in which the service selects what storage model to use. Note that 
+ * the module mimics localStorage and sessionStorage by using cookies if one, 
+ * or both, of the web storage models aren't supported.
+ *
+ * @see setStorageOrder
  */
-webStorageModule.constant('order', ['local', 'session', 'memory']);
+webStorageModule.constant('defaultOrder', ['local', 'session', 'memory']);
 
 /**
  * Name of the error that will be broadcast via the $rootScope on errors. 
@@ -166,7 +169,10 @@ webStorageModule.constant('errorName', 'webStorage.notification.error');
 /**
  * Setup the webStorage service.
  */
-webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorName', function($rootScope, prefix, order, errorName) {
+webStorageModule.factory('webStorage',
+		['$rootScope', 'prefix', 'defaultOrder', 'errorName',
+		function($rootScope, prefix, defaultOrder, errorName) {
+
 	'use strict';
 
 	/**
@@ -180,6 +186,13 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 	 * @private 
 	 */
 	var hasSessionStorage = testSessionStorage();
+
+	/**
+	 * Reference to the order of preference by which storage engines are iterated.
+	 * @see setStorageOrder
+	 * @private
+	 */
+	var order = defaultOrder;
 	
 	/**
 	 * In-memory object used as last resort if no web storage engine is supported by the client.
@@ -361,6 +374,24 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 					return result;
 			}
 		}
+		return result;
+	};
+
+	/**
+	 * Setter for the order in which the service selects what storage model to use. 
+	 *
+	 * @param {Array} newOrder An array of string names of the order to
+	 *   query storage engines. Recognized names are 'local', 'session'
+	 *   and 'memory'. All other names are ignored.
+	 * @return {Array} Returns the previous order as an array of strings.
+	 */
+	webStorage.setStorageOrder = function(newOrder) {
+		var result = angular.copy(order);
+		order = [];
+		for (var ith in newOrder)
+			if (/^(local|session|memory)$/.test(newOrder[ith]))
+				order.push(newOrder[ith]);
+
 		return result;
 	};
 
