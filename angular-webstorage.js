@@ -71,10 +71,11 @@
  * 
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
  * @date 2013-12-18
- * @version 0.9.4
+ * @version 0.9.5
  * 
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
+ * @contributor David Rodriguez (https://github.com/programmerdave)
  * @contrubutor (https://github.com/jswxwxf)
  * 
  * 
@@ -103,7 +104,7 @@
  /*
   * Change Log
   * ----------
-  * v0.9
+  * v0.9.0
   * - Initial commit.
   *
   * v0.9.1
@@ -125,6 +126,10 @@
   * - Bugfix: the module threw access denied exceptions under 'Protected Mode'
   *   in IE, as reported by (jswxwxf). Fixed by wrapping the sessionStorage and
   *   localStorage polyfillers in a try/catch-block.
+  *
+  * v0.9.5
+  * - Bugfix: get(), getFromLocal() and getFromSession() will now return `null`
+  *   on errors as expected, reported by David Rodriguez (programmerdave).
   */
 
 /**
@@ -242,7 +247,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 		}
 		return false;
 	};
-	
+
 	/**
 	 * Getter for the key/value web store.
 	 * 
@@ -301,7 +306,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 		}
 		return false;
 	};
-	
+
 	/**
 	 * Add the specified key/value pair to the local web store.
 	 * 
@@ -372,7 +377,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			try { 
 				var value = localStorage.getItem(prefix + key);
 				return value && JSON.parse(value); 
-			} catch (e) { return croak(e); }			
+			} catch (e) { croak(e); return null; }
 		}
 		return null;
 	}
@@ -392,7 +397,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			try {
 				var value = sessionStorage.getItem(prefix + key);
 				return value && JSON.parse(value); 
-			} catch (e) { return croak(e); }
+			} catch (e) { croak(e); return null; }
 		}
 		return null;
 	}
