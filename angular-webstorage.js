@@ -320,7 +320,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			return true;
 		}
 		return false;
-	};
+	}
 	
 	/**
 	 * Add the specified key/value pair to the session web store.
@@ -340,7 +340,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			return true;
 		}
 		return false;
-	};
+	}
 	
 	/**
 	 * Add the specified key/value pair to the in-memory store.
@@ -375,7 +375,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			} catch (e) { return croak(e); }			
 		}
 		return null;
-	};
+	}
 	
 	/**
 	 * Get the specified value from the session web store.
@@ -395,7 +395,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			} catch (e) { return croak(e); }
 		}
 		return null;
-	};
+	}
 	
 	/**
 	 * Get the specified value from the in-memory store.
@@ -423,7 +423,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			return true;			
 		}
 		return false;
-	};
+	}
 	
 	/**
 	 * Remove the specified key/value pair from the session store.
@@ -438,7 +438,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			return true;			
 		}
 		return false;
-	};
+	}
 	
 	/**
 	 * Remove the specified key/value pair from the in-memory store.
@@ -476,7 +476,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 		}
 		try { localStorage.clear(); } catch (e) { return croak(e); }
 		return true;
-	};
+	}
 	
 	/**
 	 * Clear all key/value pairs form the session store.
@@ -500,7 +500,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 		}
 		try { sessionStorage.clear(); } catch (e) { return croak(e); }
 		return true;
-	};
+	}
 	
 	/**
 	 * Clear all key/value pairs form the in-memory store.
@@ -522,13 +522,13 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 	 * @private
 	 */
 	function testLocalStorage() {
-	    try {
-	        localStorage.setItem(prefix + 'angular.webStorage.test', true);
-	        localStorage.removeItem(prefix + 'angular.webStorage.test');
-	        return true;
-	    } catch (e) {
-	    	return false;
-	    }
+		try {
+			localStorage.setItem(prefix + 'angular.webStorage.test', true);
+			localStorage.removeItem(prefix + 'angular.webStorage.test');
+			return true;
+		} catch (e) {
+			return false;
+		}
 	}
 	
 	/**
@@ -538,13 +538,13 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 	 * @private
 	 */
 	function testSessionStorage() {
-	    try {
-	        sessionStorage.setItem(prefix + 'angular.webStorage.test', true);
-	        sessionStorage.removeItem(prefix + 'angular.webStorage.test');
-	        return true;
-	    } catch (e) {
-	    	return false;
-	    }
+		try {
+			sessionStorage.setItem(prefix + 'angular.webStorage.test', true);
+			sessionStorage.removeItem(prefix + 'angular.webStorage.test');
+			return true;
+		} catch (e) {
+			return false;
+		}
 	}
 	
 	/**
@@ -570,6 +570,9 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
  */
 
 try {
+	/* jshint -W001 */// 'hasOwnProperty' is a really bad name.
+	/* jshint -W014 */// Bad line break before +.
+
 	// Support for localStorage, compatible with old browsers, like Internet 
 	// Explorer < 8 (tested and working even in Internet Explorer 6).
 	// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
