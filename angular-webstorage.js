@@ -73,6 +73,10 @@
  * @date 2013-12-18
  * @version 0.9.4
  * 
+ * @contributor Paulo Cesar (https://github.com/pocesar)
+ * @contributor David Chang (https://github.com/hasdavidc)
+ * @contrubutor (https://github.com/jswxwxf)
+ * 
  * 
  * The MIT License
  * Copyright (c) 2013 Fredric Rylander
@@ -96,6 +100,32 @@
  * IN THE SOFTWARE.
  */
 
+ /*
+  * Change Log
+  * ----------
+  * v0.9
+  * - Initial commit.
+  *
+  * v0.9.1
+  * - Bugfix: removed trailing commas that IE choked on, as reported by
+  *   Paulo Cesar (pocesar).
+  *
+  * v0.9.2
+  * - Now using the identity operator instead of equality when comparing
+  *   prefixes while clearing storage.
+  * - Bugfix: clearSession() is now actually clearing sessionStorage and not
+  *   localStorage, as reported by David Chang (hasdavidc).
+  *
+  * v0.9.3
+  * - Bugfix: now using the `errorName` constant when broadcasting errors
+  *   over the `$rootScope`.
+  *
+  * v0.9.4
+  * - Added strict mode.
+  * - Bugfix: the module threw access denied exceptions under 'Protected Mode'
+  *   in IE, as reported by (jswxwxf). Fixed by wrapping the sessionStorage and
+  *   localStorage polyfillers in a try/catch-block.
+  */
 
 /**
  * Setup the webStorageModule.
