@@ -123,6 +123,8 @@ webStorageModule.constant('errorName', 'webStorage.notification.error');
  * Setup the webStorage service.
  */
 webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorName', function($rootScope, prefix, order, errorName) {
+	'use strict';
+
 	/**
 	 * Boolean flag indicating client support for local storage.
 	 * @private 
