@@ -14,11 +14,11 @@ All errors will be broadcast via the $rootScope under the name specified in the 
 The service provides the following generic methods:
 
 `webStorage`
-* `isSupported`     -- boolean flag indicating client support status (local or session storage)
-* `add(key, value)` -- add a value to storage under the specific key (storage according to 'order')
-* `get(key)`        -- return the specified value (storage according to 'order')
-* `remove(key)`     -- remove a key/value pair from storage (storage according to 'order')
-* `clear()`         -- remove all key/value pairs from storage (storage according to 'order')
+* `isSupported`          -- boolean flag indicating client support status (local or session storage)
+* `add(key, value, all)` -- add a value to storage under the specific key (storage according to 'order')
+* `get(key, all)`        -- return the specified value (storage according to 'order')
+* `remove(key, all)`     -- remove a key/value pair from storage (storage according to 'order')
+* `clear(all)`           -- remove all key/value pairs from storage (storage according to 'order')
 
 
 It also provides the following direct APIs:
@@ -51,7 +51,7 @@ Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 2013-12-18
 
 ## Module Version
-0.9.5
+0.10.0
 
 ## Requirements
 This module was built for AngularJS v1.0.5.

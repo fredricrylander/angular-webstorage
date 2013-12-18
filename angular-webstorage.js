@@ -26,11 +26,11 @@
  * The service provides the following generic methods:
  * 
  * webStorage
- * - isSupported     -- boolean flag indicating client support status (local or session storage)
- * - add(key, value) -- add a value to storage under the specific key (storage according to 'order')
- * - get(key)        -- return the specified value (storage according to 'order')
- * - remove(key)     -- remove a key/value pair from storage (storage according to 'order')
- * - clear()         -- remove all key/value pairs from storage (storage according to 'order')
+ * - isSupported          -- boolean flag indicating client support status (local or session storage)
+ * - add(key, value, all) -- add a value to storage under the specific key (storage according to 'order')
+ * - get(key, all)        -- return the specified value (storage according to 'order')
+ * - remove(key, all)     -- remove a key/value pair from storage (storage according to 'order')
+ * - clear(all)           -- remove all key/value pairs from storage (storage according to 'order')
  * 
  * 
  * It also provides the following direct APIs:
@@ -130,6 +130,15 @@
   * v0.9.5
   * - Bugfix: get(), getFromLocal() and getFromSession() will now return `null`
   *   on errors as expected, reported by David Rodriguez (programmerdave).
+  *
+  * v0.10.0
+  * - Added `allEngines` as an argument to the generic methods (add, get,
+  *   remove and clear). This enables the caller to decide if all supported
+  *   storage engines should be queried or only the first supported one.
+  *   The default value for this argument was chosen so that add() will only
+  *   use the first supported storage engine, while get(), remove() and clear()
+  *   will query all supported storage engines. The update was inspired by
+  *   David Rodriguez's (programmerdave) pull request.
   */
 
 /**
@@ -227,63 +236,98 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 			clear: clearMemory
 		}
 	};
-	
+
 	/**
 	 * Setter for the key/value web store.
 	 * 
-	 * NOTE: The method will use local or session storage depending on the client's 
-	 * support as well as the order set in the module constant 'order'.
+	 * NOTE: This method will use local or session storage depending on the
+	 * client's support as well as the order set in the module constant 
+	 * 'order'. If 'allEngines' is true (default is false) then the key/value
+	 * pair will be added to all available storage engines.
 	 * 
 	 * @param {String} key Name to store the given value under.
 	 * @param {mixed} value The value to store.
-	 * @return {boolean} True on success, else false.
+	 * @param {boolean} allEngines If true, add to all available engines, else
+	 *   only add to the first supported storage engine. Default is false.
+	 * @return {boolean} True on success, else false. If 'allEngines' is true
+	 *   then success is when the value was added to at least one storage engine.
 	 */
-	webStorage.add = function(key, value) {
+	webStorage.add = function(key, value, allEngines) {
+		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : false;
+		var result = false;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
 			var engine = webStorage[order[ith]];
-			if (engine.isSupported)
-				return engine.add(key, value);
+			if (engine.isSupported) {
+				result = engine.add(key, value) || result;
+				if (!allEngines) 
+					return result;
+			}
 		}
-		return false;
+		return result;
 	};
 
 	/**
 	 * Getter for the key/value web store.
 	 * 
-	 * NOTE: The method will use local or session storage depending on the client's 
-	 * support as well as the order set in the module constant 'order'.
+	 * NOTE: This method will use local or session storage depending on the 
+	 * client's support as well as the order set in the module constant 'order'. 
+	 * If 'allEngines' is false (default is true) then only the first supported
+	 * storage engine will be queried for the specified key/value, otherwise all
+	 * engines will be queried in turn until a non-null value is returned.
 	 * 
 	 * @param {String} key Name of the value to retrieve.
-	 * @return {mixed} The value previously added under the specified key, else null.
+	 * @param {boolean} allEngines If false only the first supported storage
+	 *   engine will be queried for the given key/value pair, otherwise all
+	 *   engines will be queried in turn until a non-null value is found.
+	 *   Default is true.
+	 * @return {mixed} The value previously added under the specified key, 
+	 *   else null.
 	 */
-	webStorage.get = function(key) {
+	webStorage.get = function(key, allEngines) {
+		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
 			var engine = webStorage[order[ith]];
-			if (engine.isSupported)
-				return engine.get(key);
+			if (engine.isSupported) {
+				var value = engine.get(key);
+				if (!allEngines || value !== null)
+					return value;
+			}
 		}
 		return null;
 	};
 
 	/**
-	 * Remove values from the key/value web store.
+	 * Remove a specified value from the key/value web store.
 	 * 
-	 * NOTE: The method will use local or session storage depending on the client's 
-	 * support as well as the order set in the module constant 'order'.
+	 * NOTE: The method will use local or session storage depending on the 
+	 * client's support as well as the order set in the module constant 'order'.
+	 * If 'allEngines' is true (the default) then the specified key/value pair
+	 * will be removed from all supported storage engines, otherwise only
+	 * the first supported storage engine will be used for the removal.
 	 * 
 	 * @param {String} key Name of the value to remove.
-	 * @return {boolean} True on success, else false.
+	 * @param {boolean} allEngines If true, remove from all available engines, 
+	 *   else only remove from the first supported storage engine. Default is 
+	 *   true.
+	 * @return {boolean} True on success, else false. If 'allEngines' is true
+	 *   then success is when the value was removed from at least one storage 
+	 *   engine.
 	 */
-	webStorage.remove = function(key) {
+	webStorage.remove = function(key, allEngines) {
+		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
+		var result = false;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
 			var engine = webStorage[order[ith]];
-			if (engine.isSupported)
-				return engine.remove(key);
+			if (engine.isSupported) {
+				var result = engine.remove(key) || result;
+				if (!allEngines)
+					return result;
+			}
 		}
-		return false;
+		return result;
 	};
 
 	/**
@@ -292,19 +336,32 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 	 * If a prefix has been specified in the module constant 'prefix' then
 	 * only values with that specific prefix will be removed.
 	 * 
-	 * NOTE: The method will use local or session storage depending on the client's 
-	 * support as well as the order set in the module constant 'order'.
-	 * 
-	 * @return {boolean} True on success, else false.
+	 * NOTE: The method will use local or session storage depending on the 
+	 * client's support as well as the order set in the module constant 'order'.
+	 * If 'allEngines' is true (the default) then the all key/value pairs
+	 * will be removed from all supported storage engines, otherwise only
+	 * the first supported storage engine will have its values removed.
+	 *
+	 * @param {boolean} allEngines If true, remove from all available engines, 
+	 *   else only remove from the first supported storage engine. Default is 
+	 *   true.
+	 * @return {boolean} True on success, else false. If 'allEngines' is true
+	 *   then success is when the all values was removed from at least one
+	 *   storage engine.
 	 */
-	webStorage.clear = function() {
+	webStorage.clear = function(allEngines) {
+		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
+		var result = false;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
 			var engine = webStorage[order[ith]];
-			if (engine.isSupported)
-				return engine.clear();
+			if (engine.isSupported) {
+				result = engine.clear() || result;
+				if (!allEngines)
+					return result;
+			}
 		}
-		return false;
+		return result;
 	};
 
 	/**
