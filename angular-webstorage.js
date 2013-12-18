@@ -530,88 +530,99 @@ webStorageModule.factory('webStorage', ['$rootScope', 'prefix', 'order', 'errorN
 }]);
 
 
+/**
+ * Polyfilling the localStorage and sessionStorage APIs by setting cookies
+ * on the document.
+ *
+ * Source from: https://developer.mozilla.org/en-US/docs/DOM/Storage
+ */
 
-// Support for localStorage, compatible with old browsers, like Internet 
-// Explorer < 8 (tested and working even in Internet Explorer 6).
-// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
-if (!window.localStorage) {
-	window.localStorage = {
-		getItem : function(sKey) {
-			if (!sKey || !this.hasOwnProperty(sKey)) {
-				return null;
+try {
+	// Support for localStorage, compatible with old browsers, like Internet 
+	// Explorer < 8 (tested and working even in Internet Explorer 6).
+	// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
+	if (!window.localStorage) {
+		window.localStorage = {
+			getItem : function(sKey) {
+				if (!sKey || !this.hasOwnProperty(sKey)) {
+					return null;
+				}
+				return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)"
+						+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&")
+						+ "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
+			},
+			key : function(nKeyId) {
+				return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "")
+						.split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
+			},
+			setItem : function(sKey, sValue) {
+				if (!sKey) {
+					return;
+				}
+				document.cookie = escape(sKey) + "=" + escape(sValue)
+						+ "; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/";
+				this.length = document.cookie.match(/\=/g).length;
+			},
+			length : 0,
+			removeItem : function(sKey) {
+				if (!sKey || !this.hasOwnProperty(sKey)) {
+					return;
+				}
+				document.cookie = escape(sKey)
+						+ "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+				this.length--;
+			},
+			hasOwnProperty : function(sKey) {
+				return (new RegExp("(?:^|;\\s*)"
+						+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\="))
+						.test(document.cookie);
 			}
-			return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)"
-					+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&")
-					+ "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
-		},
-		key : function(nKeyId) {
-			return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "")
-					.split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
-		},
-		setItem : function(sKey, sValue) {
-			if (!sKey) {
-				return;
-			}
-			document.cookie = escape(sKey) + "=" + escape(sValue)
-					+ "; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/";
-			this.length = document.cookie.match(/\=/g).length;
-		},
-		length : 0,
-		removeItem : function(sKey) {
-			if (!sKey || !this.hasOwnProperty(sKey)) {
-				return;
-			}
-			document.cookie = escape(sKey)
-					+ "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-			this.length--;
-		},
-		hasOwnProperty : function(sKey) {
-			return (new RegExp("(?:^|;\\s*)"
-					+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\="))
-					.test(document.cookie);
-		}
-	};
-	window.localStorage.length = (document.cookie.match(/\=/g) || window.localStorage).length;
-}
+		};
+		window.localStorage.length = (document.cookie.match(/\=/g) || window.localStorage).length;
+	}
 
-// Support for sessionStorage, compatible with old browsers, like Internet
-// Explorer < 8 (tested and working even in Internet Explorer 6).
-// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
-if (!window.sessionStorage) {
-	window.sessionStorage = {
-		getItem : function(sKey) {
-			if (!sKey || !this.hasOwnProperty(sKey)) {
-				return null;
+	// Support for sessionStorage, compatible with old browsers, like Internet
+	// Explorer < 8 (tested and working even in Internet Explorer 6).
+	// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
+	if (!window.sessionStorage) {
+		window.sessionStorage = {
+			getItem : function(sKey) {
+				if (!sKey || !this.hasOwnProperty(sKey)) {
+					return null;
+				}
+				return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)"
+						+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&")
+						+ "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
+			},
+			key : function(nKeyId) {
+				return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "")
+						.split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
+			},
+			setItem : function(sKey, sValue) {
+				if (!sKey) {
+					return;
+				}
+				document.cookie = escape(sKey) + "=" + escape(sValue) + "; path=/";
+				this.length = document.cookie.match(/\=/g).length;
+			},
+			length : 0,
+			removeItem : function(sKey) {
+				if (!sKey || !this.hasOwnProperty(sKey)) {
+					return;
+				}
+				document.cookie = escape(sKey)
+						+ "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+				this.length--;
+			},
+			hasOwnProperty : function(sKey) {
+				return (new RegExp("(?:^|;\\s*)"
+						+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\="))
+						.test(document.cookie);
 			}
-			return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)"
-					+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&")
-					+ "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
-		},
-		key : function(nKeyId) {
-			return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "")
-					.split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
-		},
-		setItem : function(sKey, sValue) {
-			if (!sKey) {
-				return;
-			}
-			document.cookie = escape(sKey) + "=" + escape(sValue) + "; path=/";
-			this.length = document.cookie.match(/\=/g).length;
-		},
-		length : 0,
-		removeItem : function(sKey) {
-			if (!sKey || !this.hasOwnProperty(sKey)) {
-				return;
-			}
-			document.cookie = escape(sKey)
-					+ "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-			this.length--;
-		},
-		hasOwnProperty : function(sKey) {
-			return (new RegExp("(?:^|;\\s*)"
-					+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\="))
-					.test(document.cookie);
-		}
-	};
-	window.sessionStorage.length = (document.cookie.match(/\=/g) || window.sessionStorage).length;
+		};
+		window.sessionStorage.length = (document.cookie.match(/\=/g) || window.sessionStorage).length;
+	}
+
+} catch (e) {
+	// Protected Mode on IE? There's really nothing to do at this stage.
 }
