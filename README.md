@@ -65,6 +65,12 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
     var myApp = angular.module('myApp', ['webStorageModule']);
     myApp.controller('myController', function ($scope, webStorage) { ... });
 
+## Contributors
+* Paulo Cesar (https://github.com/pocesar)
+* David Chang (https://github.com/hasdavidc)
+* David Rodriguez (https://github.com/programmerdave)
+* (https://github.com/jswxwxf)
+
 ## License
     The MIT License
     Copyright (c) 2013 Fredric Rylander
