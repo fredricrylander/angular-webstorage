@@ -16,23 +16,23 @@
  * all its values will be lost on page reload (somewhat negating the whole
  * idea of client web storage!)
  *
- * If the client doesn't support local or session web storage the module will
+ * If the client does not support local or session web storage the module will
  * try to mimic them by setting cookies on the current document.
  *
- * All errors will be broadcast via the $rootScope under the name specified
- * in the module constant 'errorName' (defaults to: 'webStorage.notification.error'.)
+ * All errors will be broadcast via the `$rootScope` under a specific name 
+ * (defaults to: `webStorage.notification.error`.)
  *
  * The service provides the following generic methods:
  *
  * webStorage
- * - isSupported             -- boolean flag indicating client support status (local or session storage)
- * - add(key, value [, all]) -- add a value to storage under the specific key (storage according to 'order')
- * - get(key [, all])        -- return the specified value (storage according to 'order')
- * - remove(key [, all])     -- remove a key/value pair from storage (storage according to 'order')
- * - clear(all)              -- remove all key/value pairs from storage (storage according to 'order')
- * - errorName(str)          -- get or set the name of the event that is broadcast over the $rootScope on errors
- * - prefix(str)             -- get or set the prefix used for keys while operating on storage values
- * - order(array)            -- get or set the order by which storage models are iterated
+ * - isSupported          -- boolean flag indicating client support status (local or session storage)
+ * - add(key, value, all) -- add a value to storage under the specific key (storage according to 'order')
+ * - get(key, all)        -- return the specified value (storage according to 'order')
+ * - remove(key, all)     -- remove a key/value pair from storage (storage according to 'order')
+ * - clear(all)           -- remove all key/value pairs from storage (storage according to 'order')
+ * - errorName(str)       -- get or set the name of the event that is broadcast over the $rootScope on errors
+ * - prefix(str)          -- get or set the prefix used for keys while operating on storage values
+ * - order(array)         -- get or set the order by which storage models are iterated
  *
  * It also provides the following direct APIs:
  *
@@ -139,7 +139,7 @@
   *   The default value for this argument was chosen so that `add()` will only
   *   use the first supported storage engine, while `get()`, `remove()` and
   *   `clear()` will query all supported storage engines. The update was
-  *   inspired by David Rodriguez's (programmerdave) pull request.
+  *   inspired by David Rodriguez’s (programmerdave) pull request.
   * - Added `setStorageOrder()` so that users of the module may alter the order
   *   by which storage models are iterated.
   * - Added `setStoragePrefix()` so that users of the module may alter the
