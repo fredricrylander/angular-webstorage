@@ -51,10 +51,10 @@ It also provides the following direct APIs:
 Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 
 ## Date
-2013-12-18
+2013-12-19
 
 ## Module Version
-0.10.0
+0.10.1
 
 ## Requirements
 This module was built for AngularJS v1.0.5.
@@ -70,6 +70,55 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
 * David Chang (https://github.com/hasdavidc)
 * David Rodriguez (https://github.com/programmerdave)
 * (https://github.com/jswxwxf)
+
+Change Log
+----------
+* v0.9.0
+    - Initial commit.
+
+* v0.9.1
+    - Bugfix: removed trailing commas that IE choked on, as reported by
+      Paulo Cesar (pocesar).
+
+* v0.9.2
+    - Now using the identity operator instead of equality when comparing
+      prefixes while clearing storage.
+    - Bugfix: clearSession() is now actually clearing sessionStorage and not
+      localStorage, as reported by David Chang (hasdavidc).
+
+* v0.9.3
+    - Bugfix: now using the `errorName` constant when broadcasting errors
+      over the `$rootScope`.
+
+* v0.9.4
+    - Added strict mode.
+    - Bugfix: the module threw access denied exceptions under 'Protected Mode'
+      in IE, as reported by (jswxwxf). Fixed by wrapping the sessionStorage and
+      localStorage polyfillers in a try/catch-block.
+
+* v0.9.5
+    - Bugfix: `get(), `getFromLocal()` and `getFromSession()` will now return
+      `null` on errors as expected, reported by David Rodriguez (programmerdave).
+
+* v0.10.0
+    - Added `allEngines` as an argument to the generic methods (`add`, `get`,
+      `remove` and `clear`). This enables the caller to decide if all supported
+      storage engines should be queried or only the first supported one.
+      The default value for this argument was chosen so that `add()` will only
+      use the first supported storage engine, while `get()`, `remove()` and
+      `clear()` will query all supported storage engines. The update was
+      inspired by David Rodriguez's (programmerdave) pull request.
+    - Added `setStorageOrder()` so that users of the module may alter the order
+      by which storage models are iterated.
+    - Added `setStoragePrefix()` so that users of the module may alter the
+      prefix used when setting, getting or removing values from the store.
+    - Added `setErrorName()` so that users of the module may alter the name
+      of the event that is broadcast over the `$rootScope` on module errors.
+
+* v0.10.1
+    - Updated the API documentation with `setErrorName()` and `setStoragePrefix()`.
+    - Added the list of contributors to README.md.
+    - Added this changelog to README.md.
 
 ## License
     The MIT License

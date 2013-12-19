@@ -71,8 +71,8 @@
  * </code>
  *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
- * @date 2013-12-18
- * @version 0.10.0
+ * @date 2013-12-19
+ * @version 0.10.1
  *
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
@@ -129,23 +129,28 @@
   *   localStorage polyfillers in a try/catch-block.
   *
   * v0.9.5
-  * - Bugfix: get(), getFromLocal() and getFromSession() will now return `null`
-  *   on errors as expected, reported by David Rodriguez (programmerdave).
+  * - Bugfix: `get()`, `getFromLocal()` and `getFromSession()` will now return
+  *   `null` on errors as expected, reported by David Rodriguez (programmerdave).
   *
   * v0.10.0
-  * - Added `allEngines` as an argument to the generic methods (add, get,
-  *   remove and clear). This enables the caller to decide if all supported
+  * - Added `allEngines` as an argument to the generic methods (`add`, `get`,
+  *   `remove` and `clear`). This enables the caller to decide if all supported
   *   storage engines should be queried or only the first supported one.
-  *   The default value for this argument was chosen so that add() will only
-  *   use the first supported storage engine, while get(), remove() and clear()
-  *   will query all supported storage engines. The update was inspired by
-  *   David Rodriguez's (programmerdave) pull request.
-  * - Added setStorageOrder() so that users of the module may alter the order
+  *   The default value for this argument was chosen so that `add()` will only
+  *   use the first supported storage engine, while `get()`, `remove()` and
+  *   `clear()` will query all supported storage engines. The update was
+  *   inspired by David Rodriguez's (programmerdave) pull request.
+  * - Added `setStorageOrder()` so that users of the module may alter the order
   *   by which storage models are iterated.
-  * - Added setStoragePrefix() so that users of the module may alter the
+  * - Added `setStoragePrefix()` so that users of the module may alter the
   *   prefix used when setting, getting or removing values from the store.
-  * - Added setErrorName() so that users of the module may alter the name
-  *   of the event that is broadcast over the $rootScope on module errors.
+  * - Added `setErrorName()` so that users of the module may alter the name
+  *   of the event that is broadcast over the `$rootScope` on module errors.
+  *
+  * v0.10.1
+  * - Updated the API documentation with `setErrorName()` and `setStoragePrefix()`.
+  * - Added the list of contributors to README.md.
+  * - Added this changelog to README.md.
   */
 
 /**
