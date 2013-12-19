@@ -97,7 +97,7 @@ Change Log
       localStorage polyfillers in a try/catch-block.
 
 * v0.9.5
-    - Bugfix: `get(), `getFromLocal()` and `getFromSession()` will now return
+    - Bugfix: `get()`, `getFromLocal()` and `getFromSession()` will now return
       `null` on errors as expected, reported by David Rodriguez (programmerdave).
 
 * v0.10.0
