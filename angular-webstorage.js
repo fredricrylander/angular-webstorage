@@ -1,29 +1,29 @@
 /**
  * WebStorage Service for AngularJS
- * 
- * The webStorage service has both a generic and direct API. The generic 
+ *
+ * The webStorage service has both a generic and direct API. The generic
  * API will check for client support and preferred order before altering a
  * specific storage value, trying to degrade gracefully according to a set
- * heuristic. The direct APIs works with either the client's local, session 
+ * heuristic. The direct APIs works with either the client's local, session
  * or the module's own in-memory storage engines.
- * 
+ *
  * The selection heuristics for the generic API is mainly dictated by a set
  * order (defaults to ['local', 'session', 'memory'].) If the client has no
  * support for the specified storage engine then the service will try to fall
  * back on the next specified engine and so forth.
- * 
- * NOTE: The in-memory storage should really be seen as a last resort since 
- * all its values will be lost on page reload (somewhat negating the whole 
+ *
+ * NOTE: The in-memory storage should really be seen as a last resort since
+ * all its values will be lost on page reload (somewhat negating the whole
  * idea of client web storage!)
- * 
+ *
  * If the client doesn't support local or session web storage the module will
  * try to mimic them by setting cookies on the current document.
- * 
- * All errors will be broadcast via the $rootScope under the name specified 
- * in the module constant 'errorName' (defaults to: 'webStorage.notification.error'.) 
- * 
+ *
+ * All errors will be broadcast via the $rootScope under the name specified
+ * in the module constant 'errorName' (defaults to: 'webStorage.notification.error'.)
+ *
  * The service provides the following generic methods:
- * 
+ *
  * webStorage
  * - isSupported            -- boolean flag indicating client support status (local or session storage)
  * - add(key, value, all)   -- add a value to storage under the specific key (storage according to 'order')
@@ -31,71 +31,71 @@
  * - remove(key, all)       -- remove a key/value pair from storage (storage according to 'order')
  * - clear(all)             -- remove all key/value pairs from storage (storage according to 'order')
  * - setStorageOrder(order) -- alter the order by which storage models are iterated
- * 
+ *
  * It also provides the following direct APIs:
- * 
+ *
  * webStorage.local
  * - isSupported     -- boolean flag indicating client support status (local storage)
  * - add(key, value) -- add a value to storage under the specific key (local storage)
  * - get(key)        -- return the specified value (local storage)
  * - remove(key)     -- remove a key/value pair from storage (local storage)
  * - clear()         -- remove all key/value pairs from storage (local storage)
- * 
+ *
  * webStorage.session
  * - isSupported     -- boolean flag indicating client support status (session storage)
  * - add(key, value) -- add a value to storage under the specific key (session storage)
  * - get(key)        -- return the specified value (session storage)
  * - remove(key)     -- remove a key/value pair from storage (session storage)
  * - clear()         -- remove all key/value pairs from storage (session storage)
- * 
+ *
  * webStorage.memory
  * - isSupported     -- boolean true, the in-memory storage is always supported
  * - add(key, value) -- add a value to storage under the specific key (in-memory storage)
  * - get(key)        -- return the specified value (in-memory storage)
  * - remove(key)     -- remove a key/value pair from storage (in-memory storage)
  * - clear()         -- remove all key/value pairs from storage (in-memory storage)
- * 
- * 
+ *
+ *
  * Requirements
  * This module was built for AngularJS v1.0.5.
- * 
+ *
  * Usage
  * Add `webStorageModule` to your app's dependencies. Then inject `webStorage`
  * into any controller that needs to use it, e.g.:
- * 
+ *
  * <code>
  *     var myApp = angular.module('myApp', ['webStorageModule']);
  *     myApp.controller('myController', function ($scope, webStorage) { ... });
  * </code>
- * 
+ *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
  * @date 2013-12-18
- * @version 0.9.5
- * 
+ * @version 0.10.0
+ *
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
  * @contributor David Rodriguez (https://github.com/programmerdave)
  * @contrubutor (https://github.com/jswxwxf)
- * 
- * 
+ *
+ *
  * The MIT License
  * Copyright (c) 2013 Fredric Rylander
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a 
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- * and/or sell copies of the Software, and to permit persons to whom the 
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in 
+ * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL  
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
@@ -138,8 +138,12 @@
   *   use the first supported storage engine, while get(), remove() and clear()
   *   will query all supported storage engines. The update was inspired by
   *   David Rodriguez's (programmerdave) pull request.
-  * - Added setStorageOrder() so that users of the module may alter the order 
+  * - Added setStorageOrder() so that users of the module may alter the order
   *   by which storage models are iterated.
+  * - Added setStoragePrefix() so that users of the module may alter the
+  *   prefix used when setting, getting or removing values from the store.
+  * - Added setErrorName() so that users of the module may alter the name
+  *   of the event that is broadcast over the $rootScope on module errors.
   */
 
 /**
@@ -148,42 +152,50 @@
 var webStorageModule = angular.module('webStorageModule', []);
 
 /**
- * Set a prefix that will be used for all storage data (defaults to the empty string.)
- */
-webStorageModule.constant('prefix', '');
-
-/**
- * The order in which the service selects what storage model to use. Note that 
- * the module mimics localStorage and sessionStorage by using cookies if one, 
- * or both, of the web storage models aren't supported.
+ * Module settings.
  *
+ * @see setErrorName
  * @see setStorageOrder
+ * @see setStoragePrefix
  */
-webStorageModule.constant('defaultOrder', ['local', 'session', 'memory']);
+webStorageModule.constant('defaultSettings', {
+	// Set a prefix that will be used for all storage data (defaults to the empty string.)
+	// Use setStoragePrefix to modify this prefix.
+	prefix: '',
 
-/**
- * Name of the error that will be broadcast via the $rootScope on errors. 
- */
-webStorageModule.constant('errorName', 'webStorage.notification.error');
+	// The order in which the service selects what storage model to use. Note that
+    // the module mimics localStorage and sessionStorage by using cookies if one,
+    // or both, of the web storage models aren't supported.
+    // Use setStorageOrder() to modify this list.
+	order: ['local', 'session', 'memory'],
+
+	// Name of the event that will be broadcast via the $rootScope on errors.
+	// Use setErrorName() to modify this value.
+	errorName: 'webStorage.notification.error'
+});
 
 /**
  * Setup the webStorage service.
  */
-webStorageModule.factory('webStorage',
-		['$rootScope', 'prefix', 'defaultOrder', 'errorName',
-		function($rootScope, prefix, defaultOrder, errorName) {
-
+webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', function ($rootScope, defaultSettings) {
 	'use strict';
 
 	/**
+	 * Name of the event that will be broadcast over the $rootScope on errors.
+	 * @see setErrorName
+	 * @private
+	 */
+	var errorName = defaultSettings.errorName;
+
+	/**
 	 * Boolean flag indicating client support for local storage.
-	 * @private 
+	 * @private
 	 */
 	var hasLocalStorage = testLocalStorage();
 
 	/**
 	 * Boolean flag indicating client support for session storage.
-	 * @private 
+	 * @private
 	 */
 	var hasSessionStorage = testSessionStorage();
 
@@ -192,22 +204,29 @@ webStorageModule.factory('webStorage',
 	 * @see setStorageOrder
 	 * @private
 	 */
-	var order = defaultOrder;
-	
+	var order = defaultSettings.order;
+
+	/**
+	 * Prefix used on key names when setting/getting/deleting values from the web store.
+	 * @see setStoragePrefix
+	 * @private
+	 */
+	var prefix = defaultSettings.prefix;
+
 	/**
 	 * In-memory object used as last resort if no web storage engine is supported by the client.
 	 * @private
 	 */
 	var ram = {};
-	
+
 	/**
 	 * The webStorage service API.
 	 */
 	var webStorage = {
 		/** Boolean flag indicating that the client has support for some form of web storage or not. */
 		isSupported: hasLocalStorage || hasSessionStorage,
-		
-		/** 
+
+		/**
 		 * The local storage API.
 		 * The API is the same as the generic API for the webStore service, but will
 		 * only operate directly on the local store. Errors will be broadcast via
@@ -220,7 +239,7 @@ webStorageModule.factory('webStorage',
 			remove: removeFromLocal,
 			clear: clearLocal
 		},
-		
+
 		/**
 		 * The session storage API.
 		 * The API is the same as the generic API for the webStore service, but will
@@ -234,7 +253,7 @@ webStorageModule.factory('webStorage',
 			remove: removeFromSession,
 			clear: clearSession
 		},
-		
+
 		/**
 		 * The in-memory API.
 		 * The API is the same as the generic API for the webStore service, but will
@@ -252,20 +271,20 @@ webStorageModule.factory('webStorage',
 
 	/**
 	 * Setter for the key/value web store.
-	 * 
+	 *
 	 * NOTE: This method will use local or session storage depending on the
-	 * client's support as well as the order set in the module constant 
+	 * client's support as well as the order set in the module constant
 	 * 'order'. If 'allEngines' is true (default is false) then the key/value
 	 * pair will be added to all available storage engines.
-	 * 
-	 * @param {String} key Name to store the given value under.
+	 *
+	 * @param {string} key Name to store the given value under.
 	 * @param {mixed} value The value to store.
 	 * @param {boolean} allEngines If true, add to all available engines, else
 	 *   only add to the first supported storage engine. Default is false.
 	 * @return {boolean} True on success, else false. If 'allEngines' is true
 	 *   then success is when the value was added to at least one storage engine.
 	 */
-	webStorage.add = function(key, value, allEngines) {
+	webStorage.add = function (key, value, allEngines) {
 		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : false;
 		var result = false;
 		var length = order.length;
@@ -273,7 +292,7 @@ webStorageModule.factory('webStorage',
 			var engine = webStorage[order[ith]];
 			if (engine.isSupported) {
 				result = engine.add(key, value) || result;
-				if (!allEngines) 
+				if (!allEngines)
 					return result;
 			}
 		}
@@ -282,22 +301,22 @@ webStorageModule.factory('webStorage',
 
 	/**
 	 * Getter for the key/value web store.
-	 * 
-	 * NOTE: This method will use local or session storage depending on the 
-	 * client's support as well as the order set in the module constant 'order'. 
+	 *
+	 * NOTE: This method will use local or session storage depending on the
+	 * client's support as well as the order set in the module constant 'order'.
 	 * If 'allEngines' is false (default is true) then only the first supported
 	 * storage engine will be queried for the specified key/value, otherwise all
 	 * engines will be queried in turn until a non-null value is returned.
-	 * 
-	 * @param {String} key Name of the value to retrieve.
+	 *
+	 * @param {string} key Name of the value to retrieve.
 	 * @param {boolean} allEngines If false only the first supported storage
 	 *   engine will be queried for the given key/value pair, otherwise all
 	 *   engines will be queried in turn until a non-null value is found.
 	 *   Default is true.
-	 * @return {mixed} The value previously added under the specified key, 
+	 * @return {mixed} The value previously added under the specified key,
 	 *   else null.
 	 */
-	webStorage.get = function(key, allEngines) {
+	webStorage.get = function (key, allEngines) {
 		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
@@ -313,29 +332,29 @@ webStorageModule.factory('webStorage',
 
 	/**
 	 * Remove a specified value from the key/value web store.
-	 * 
-	 * NOTE: The method will use local or session storage depending on the 
+	 *
+	 * NOTE: The method will use local or session storage depending on the
 	 * client's support as well as the order set in the module constant 'order'.
 	 * If 'allEngines' is true (the default) then the specified key/value pair
 	 * will be removed from all supported storage engines, otherwise only
 	 * the first supported storage engine will be used for the removal.
-	 * 
-	 * @param {String} key Name of the value to remove.
-	 * @param {boolean} allEngines If true, remove from all available engines, 
-	 *   else only remove from the first supported storage engine. Default is 
+	 *
+	 * @param {string} key Name of the value to remove.
+	 * @param {boolean} allEngines If true, remove from all available engines,
+	 *   else only remove from the first supported storage engine. Default is
 	 *   true.
 	 * @return {boolean} True on success, else false. If 'allEngines' is true
-	 *   then success is when the value was removed from at least one storage 
+	 *   then success is when the value was removed from at least one storage
 	 *   engine.
 	 */
-	webStorage.remove = function(key, allEngines) {
+	webStorage.remove = function (key, allEngines) {
 		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
 		var result = false;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
 			var engine = webStorage[order[ith]];
 			if (engine.isSupported) {
-				var result = engine.remove(key) || result;
+				result = engine.remove(key) || result;
 				if (!allEngines)
 					return result;
 			}
@@ -345,24 +364,24 @@ webStorageModule.factory('webStorage',
 
 	/**
 	 * Remove all values in the key/value web store.
-	 * 
+	 *
 	 * If a prefix has been specified in the module constant 'prefix' then
 	 * only values with that specific prefix will be removed.
-	 * 
-	 * NOTE: The method will use local or session storage depending on the 
+	 *
+	 * NOTE: The method will use local or session storage depending on the
 	 * client's support as well as the order set in the module constant 'order'.
 	 * If 'allEngines' is true (the default) then the all key/value pairs
 	 * will be removed from all supported storage engines, otherwise only
 	 * the first supported storage engine will have its values removed.
 	 *
-	 * @param {boolean} allEngines If true, remove from all available engines, 
-	 *   else only remove from the first supported storage engine. Default is 
+	 * @param {boolean} allEngines If true, remove from all available engines,
+	 *   else only remove from the first supported storage engine. Default is
 	 *   true.
 	 * @return {boolean} True on success, else false. If 'allEngines' is true
 	 *   then success is when the all values was removed from at least one
 	 *   storage engine.
 	 */
-	webStorage.clear = function(allEngines) {
+	webStorage.clear = function (allEngines) {
 		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
 		var result = false;
 		var length = order.length;
@@ -378,14 +397,31 @@ webStorageModule.factory('webStorage',
 	};
 
 	/**
-	 * Setter for the order in which the service selects what storage model to use. 
+	 * Setter for the error name that is used when broadcasting errors on the $rootScope.
+	 *
+	 * @param {string} newErrorName The new error name.
+	 * @return {mixed} The previous error name, or false on error.
+	 * @see defaultPrefix
+	 */
+	webStorage.setErrorName = function (newErrorName) {
+		if (typeof newErrorName !== 'string')
+			return false;
+
+		var result = errorName;
+		errorName = newErrorName;
+		return result;
+	};
+
+	/**
+	 * Setter for the order in which the service selects what storage model to use.
 	 *
 	 * @param {Array} newOrder An array of string names of the order to
 	 *   query storage engines. Recognized names are 'local', 'session'
 	 *   and 'memory'. All other names are ignored.
-	 * @return {Array} Returns the previous order as an array of strings.
+	 * @return {Array} The previous order as an array of strings.
+	 * @see defaultOrder
 	 */
-	webStorage.setStorageOrder = function(newOrder) {
+	webStorage.setStorageOrder = function (newOrder) {
 		var result = angular.copy(order);
 		order = [];
 		for (var ith in newOrder)
@@ -396,13 +432,29 @@ webStorageModule.factory('webStorage',
 	};
 
 	/**
+	 * Setter for the prefix that is used when adding, getting or removing data.
+	 *
+	 * @param {string} newPrefix The new prefix.
+	 * @return {mixed} The previous prefix, or false on error.
+	 * @see defaultPrefix
+	 */
+	webStorage.setStoragePrefix = function (newPrefix) {
+		if (typeof newPrefix !== 'string')
+			return false;
+
+		var result = prefix;
+		prefix = newPrefix;
+		return result;
+	};
+
+	/**
 	 * Add the specified key/value pair to the local web store.
-	 * 
+	 *
 	 * NOTE: The web store API only specifies that implementations should be able to
-	 * handle string values, this method will therefore stringify all values into 
+	 * handle string values, this method will therefore stringify all values into
 	 * JSON strings before storing them.
-	 * 
-	 * @param {String} key The name to store the value under.
+	 *
+	 * @param {string} key The name to store the value under.
 	 * @param {mixed} value The value to set (all values are stored as JSON.)
 	 * @return {boolean} True on success, else false.
 	 * @private
@@ -414,15 +466,15 @@ webStorageModule.factory('webStorage',
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Add the specified key/value pair to the session web store.
-	 * 
+	 *
 	 * NOTE: The web store API only specifies that implementations should be able to
-	 * handle string values, this method will therefore stringify all values into 
+	 * handle string values, this method will therefore stringify all values into
 	 * JSON strings before storing them.
-	 * 
-	 * @param {String} key The name to store the value under.
+	 *
+	 * @param {string} key The name to store the value under.
 	 * @param {mixed} value The value to set (all values are stored as JSON.)
 	 * @return {boolean} True on success, else false.
 	 * @private
@@ -434,13 +486,13 @@ webStorageModule.factory('webStorage',
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Add the specified key/value pair to the in-memory store.
-	 * 
+	 *
 	 * NOTE: The in-memory storage does not use prefixes.
-	 * 
-	 * @param {String} key The name to store the value under.
+	 *
+	 * @param {string} key The name to store the value under.
 	 * @param {mixed} value The value to set.
 	 * @return {boolean} True on success, else false.
 	 * @private
@@ -449,34 +501,34 @@ webStorageModule.factory('webStorage',
 		ram[key] = value;
 		return true;
 	}
-	
+
 	/**
 	 * Get the specified value from the local web store.
-	 * 
+	 *
 	 * NOTE: Since all values are stored as JSON strings, this method will parse the fetched
 	 * JSON string and return the resulting object/value.
-	 * 
-	 * @param {String} key The name of the value.
+	 *
+	 * @param {string} key The name of the value.
 	 * @return {mixed} The value previously added under the specified key, else null.
 	 * @private
 	 */
 	function getFromLocal(key) {
 		if (hasLocalStorage) {
-			try { 
+			try {
 				var value = localStorage.getItem(prefix + key);
-				return value && JSON.parse(value); 
+				return value && JSON.parse(value);
 			} catch (e) { croak(e); return null; }
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Get the specified value from the session web store.
-	 * 
+	 *
 	 * NOTE: Since all values are stored as JSON strings, this method will parse the fetched
 	 * JSON string and return the resulting object/value.
-	 * 
-	 * @param {String} key The name of the value.
+	 *
+	 * @param {string} key The name of the value.
 	 * @return {mixed} The value previously added under the specified key, else null.
 	 * @private
 	 */
@@ -484,61 +536,61 @@ webStorageModule.factory('webStorage',
 		if (hasSessionStorage) {
 			try {
 				var value = sessionStorage.getItem(prefix + key);
-				return value && JSON.parse(value); 
+				return value && JSON.parse(value);
 			} catch (e) { croak(e); return null; }
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Get the specified value from the in-memory store.
-	 * 
+	 *
 	 * NOTE: The in-memory storage does not use prefixes.
-	 * 
-	 * @param {String} key The name of the value.
+	 *
+	 * @param {string} key The name of the value.
 	 * @return {mixed} The value previously added under the specified key, else null.
 	 * @private
 	 */
 	function getFromMemory(key) {
 		return key in ram ? ram[key] : null;
 	}
-	
+
 	/**
 	 * Remove the specified key/value pair from the local store.
-	 * 
-	 * @param {String} key The name of the value to remove.
+	 *
+	 * @param {string} key The name of the value to remove.
 	 * @return {boolean} True on success, else false.
 	 * @private
 	 */
 	function removeFromLocal(key) {
 		if (hasLocalStorage) {
 			try { localStorage.removeItem(prefix + key); } catch (e) { return croak(e); }
-			return true;			
+			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Remove the specified key/value pair from the session store.
-	 * 
-	 * @param {String} key The name of the value to remove.
+	 *
+	 * @param {string} key The name of the value to remove.
 	 * @return {boolean} True on success, else false.
 	 * @private
 	 */
 	function removeFromSession(key) {
 		if (hasSessionStorage) {
 			try { sessionStorage.removeItem(prefix + key); } catch (e) { return croak(e); }
-			return true;			
+			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Remove the specified key/value pair from the in-memory store.
-	 * 
+	 *
 	 * NOTE: The in-memory storage does not use prefixes.
-	 * 
-	 * @param {String} key The name of the value to remove.
+	 *
+	 * @param {string} key The name of the value to remove.
 	 * @return {boolean} True on success, else false.
 	 * @private
 	 */
@@ -546,13 +598,13 @@ webStorageModule.factory('webStorage',
 		delete ram[key];
 		return true;
 	}
-	
+
 	/**
 	 * Clear all key/value pairs form the local store.
 	 *
-	 * NOTE: If a prefix has been specified in the module constant 'prefix' then only 
-	 * values with that specific prefix will be removed. 
-	 * 
+	 * NOTE: If a prefix has been specified in the module constant 'prefix' then only
+	 * values with that specific prefix will be removed.
+	 *
 	 * @return {boolean} True on success, else false.
 	 * @private
 	 */
@@ -561,8 +613,8 @@ webStorageModule.factory('webStorage',
 		if (!!prefix) {
 			var prefixLength = prefix.length;
 			try {
-				for (var key in localStorage) 
-					if (key.substr(0, prefixLength) === prefix) 
+				for (var key in localStorage)
+					if (key.substr(0, prefixLength) === prefix)
 						localStorage.removeItem(key);
 			} catch (e) { return croak(e); }
 			return true;
@@ -570,13 +622,13 @@ webStorageModule.factory('webStorage',
 		try { localStorage.clear(); } catch (e) { return croak(e); }
 		return true;
 	}
-	
+
 	/**
 	 * Clear all key/value pairs form the session store.
 	 *
-	 * NOTE: If a prefix has been specified in the module constant 'prefix' then only 
-	 * values with that specific prefix will be removed. 
-	 * 
+	 * NOTE: If a prefix has been specified in the module constant 'prefix' then only
+	 * values with that specific prefix will be removed.
+	 *
 	 * @return {boolean} True on success, else false.
 	 * @private
 	 */
@@ -585,8 +637,8 @@ webStorageModule.factory('webStorage',
 		if (!!prefix) {
 			var prefixLength = prefix.length;
 			try {
-				for (var key in sessionStorage) 
-					if (key.substr(0, prefixLength) === prefix) 
+				for (var key in sessionStorage)
+					if (key.substr(0, prefixLength) === prefix)
 						sessionStorage.removeItem(key);
 			} catch (e) { return croak(e); }
 			return true;
@@ -594,12 +646,12 @@ webStorageModule.factory('webStorage',
 		try { sessionStorage.clear(); } catch (e) { return croak(e); }
 		return true;
 	}
-	
+
 	/**
 	 * Clear all key/value pairs form the in-memory store.
 	 *
-	 * NOTE: The in-memory storage does not use prefixes. 
-	 * 
+	 * NOTE: The in-memory storage does not use prefixes.
+	 *
 	 * @return {boolean} True on success, else false.
 	 * @private
 	 */
@@ -607,7 +659,7 @@ webStorageModule.factory('webStorage',
 		ram = {};
 		return true;
 	}
-	
+
 	/**
 	 * Test the client's support for storing values in the local store.
 	 *
@@ -623,7 +675,7 @@ webStorageModule.factory('webStorage',
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Test the client's support for storing values in the session store.
 	 *
@@ -639,7 +691,7 @@ webStorageModule.factory('webStorage',
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Helper method, broadcasts an error notification on exceptions.
 	 *
@@ -650,7 +702,7 @@ webStorageModule.factory('webStorage',
 		$rootScope.$broadcast(errorName, error.title + ': ' + error.message);
 		return false;
 	}
-	
+
 	return webStorage;
 }]);
 
@@ -666,7 +718,7 @@ try {
 	/* jshint -W001 */// 'hasOwnProperty' is a really bad name.
 	/* jshint -W014 */// Bad line break before +.
 
-	// Support for localStorage, compatible with old browsers, like Internet 
+	// Support for localStorage, compatible with old browsers, like Internet
 	// Explorer < 8 (tested and working even in Internet Explorer 6).
 	// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
 	if (!window.localStorage) {
