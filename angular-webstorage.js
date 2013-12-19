@@ -30,9 +30,9 @@
  * - get(key [, all])        -- return the specified value (storage according to 'order')
  * - remove(key [, all])     -- remove a key/value pair from storage (storage according to 'order')
  * - clear(all)              -- remove all key/value pairs from storage (storage according to 'order')
- * - setErrorName(str)       -- alter the name of the event that is broadcast over the $rootScope on errors
- * - setStoragePrefix(str)   -- alter the prefix used for keys while operating on storage values
- * - setStorageOrder(array)  -- alter the order by which storage models are iterated
+ * - errorName(str)          -- get or set the name of the event that is broadcast over the $rootScope on errors
+ * - prefix(str)             -- get or set the prefix used for keys while operating on storage values
+ * - order(array)            -- get or set the order by which storage models are iterated
  *
  * It also provides the following direct APIs:
  *
@@ -161,23 +161,28 @@ var webStorageModule = angular.module('webStorageModule', []);
 /**
  * Module settings.
  *
- * @see setErrorName
- * @see setStorageOrder
- * @see setStoragePrefix
+ * These are the module’s default settings, they may be queried and updated
+ * via methods with the same name. E.g. the storage model order may be updated
+ * by calling `webStorage.order(['session', 'local', 'memory'])` and the
+ * current prefix may be fetched by calling `webStorage.prefix()`.
+ *
+ * @see errorName
+ * @see order
+ * @see prefix
  */
 webStorageModule.constant('defaultSettings', {
 	// Set a prefix that will be used for all storage data (defaults to the empty string.)
-	// Use setStoragePrefix to modify this prefix.
+	// Use prefix() to modify this prefix.
 	prefix: '',
 
 	// The order in which the service selects what storage model to use. Note that
-    // the module mimics localStorage and sessionStorage by using cookies if one,
-    // or both, of the web storage models aren't supported.
-    // Use setStorageOrder() to modify this list.
+	// the module mimics localStorage and sessionStorage by using cookies if one,
+	// or both, of the web storage models aren't supported.
+	// Use order() to modify this list.
 	order: ['local', 'session', 'memory'],
 
 	// Name of the event that will be broadcast via the $rootScope on errors.
-	// Use setErrorName() to modify this value.
+	// Use errorName() to modify this value.
 	errorName: 'webStorage.notification.error'
 });
 
@@ -189,7 +194,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 
 	/**
 	 * Name of the event that will be broadcast over the $rootScope on errors.
-	 * @see setErrorName
+	 * @see errorName
 	 * @private
 	 */
 	var errorName = defaultSettings.errorName;
@@ -208,14 +213,14 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 
 	/**
 	 * Reference to the order of preference by which storage engines are iterated.
-	 * @see setStorageOrder
+	 * @see order
 	 * @private
 	 */
 	var order = defaultSettings.order;
 
 	/**
 	 * Prefix used on key names when setting/getting/deleting values from the web store.
-	 * @see setStoragePrefix
+	 * @see prefix
 	 * @private
 	 */
 	var prefix = defaultSettings.prefix;
@@ -404,53 +409,62 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	};
 
 	/**
-	 * Setter for the error name that is used when broadcasting errors on the $rootScope.
+	 * Getter/setter for the error name that is used when broadcasting errors 
+	 * on the $rootScope.
 	 *
-	 * @param {string} newErrorName The new error name.
-	 * @return {mixed} The previous error name, or false on error.
+	 * @param {string} newErrorName (Optional) The new error name.
+	 * @return {mixed} The current (on get) or previous (on set) error name,
+	 *   or false on error.
 	 * @see defaultPrefix
 	 */
-	webStorage.setErrorName = function (newErrorName) {
-		if (typeof newErrorName !== 'string')
-			return false;
-
+	webStorage.errorName = function (newErrorName) {
 		var result = errorName;
-		errorName = newErrorName;
+		if (typeof newErrorName !== 'undefined') {
+			if (typeof newErrorName !== 'string')
+				return false;
+			errorName = newErrorName;
+		}
 		return result;
 	};
 
 	/**
-	 * Setter for the order in which the service selects what storage model to use.
+	 * Getter/setter for the order in which the service selects what storage 
+	 * model to use.
 	 *
-	 * @param {Array} newOrder An array of string names of the order to
-	 *   query storage engines. Recognized names are 'local', 'session'
+	 * @param {Array} newOrder (Optional) An array of string names of the order
+	 *   to query storage engines. Recognized names are 'local', 'session'
 	 *   and 'memory'. All other names are ignored.
-	 * @return {Array} The previous order as an array of strings.
+	 * @return {Array} The current (on get) or previous (on set) order as an 
+	 *   array of strings.
 	 * @see defaultOrder
 	 */
-	webStorage.setStorageOrder = function (newOrder) {
+	webStorage.order = function (newOrder) {
 		var result = angular.copy(order);
-		order = [];
-		for (var ith in newOrder)
-			if (/^(local|session|memory)$/.test(newOrder[ith]))
-				order.push(newOrder[ith]);
-
+		if (typeof newOrder !== 'undefined') {
+			order = [];
+			for (var ith in newOrder)
+				if (/^(local|session|memory)$/.test(newOrder[ith]))
+					order.push(newOrder[ith]);
+		}
 		return result;
 	};
 
 	/**
-	 * Setter for the prefix that is used when adding, getting or removing data.
+	 * Getter/setter for the prefix that is used when adding, getting or 
+	 * removing data.
 	 *
-	 * @param {string} newPrefix The new prefix.
-	 * @return {mixed} The previous prefix, or false on error.
+	 * @param {string} newPrefix (Optional) The new prefix.
+	 * @return {mixed} The current (on get) or previous (on set) prefix, 
+	 *   or false on error.
 	 * @see defaultPrefix
 	 */
-	webStorage.setStoragePrefix = function (newPrefix) {
-		if (typeof newPrefix !== 'string')
-			return false;
-
+	webStorage.prefix = function (newPrefix) {
 		var result = prefix;
-		prefix = newPrefix;
+		if (typeof newPrefix !== 'undefined') {
+			if (typeof newPrefix !== 'string')
+				return false;
+			prefix = newPrefix;
+		}
 		return result;
 	};
 
