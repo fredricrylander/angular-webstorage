@@ -14,12 +14,14 @@ All errors will be broadcast via the $rootScope under the name specified in the 
 The service provides the following generic methods:
 
 `webStorage`
-* `isSupported`            -- boolean flag indicating client support status (local or session storage)
-* `add(key, value, all)`   -- add a value to storage under the specific key (storage according to 'order')
-* `get(key, all)`          -- return the specified value (storage according to 'order')
-* `remove(key, all)`       -- remove a key/value pair from storage (storage according to 'order')
-* `clear(all)`             -- remove all key/value pairs from storage (storage according to 'order')
-* `setStorageOrder(order)` -- alter the order by which storage models are iterated
+* `isSupported`             -- boolean flag indicating client support status (local or session storage)
+* `add(key, value [, all])` -- add a value to storage under the specific key (storage according to 'order')
+* `get(key [, all])`        -- return the specified value (storage according to 'order')
+* `remove(key [, all])`     -- remove a key/value pair from storage (storage according to 'order')
+* `clear(all)`              -- remove all key/value pairs from storage (storage according to 'order')
+* `setErrorName(str)`       -- alter the name of the event that is broadcast over the $rootScope on errors
+* `setStoragePrefix(str)`   -- alter the prefix used for keys while operating on storage values
+* `setStorageOrder(order)`  -- alter the order by which storage models are iterated
 
 
 It also provides the following direct APIs:
