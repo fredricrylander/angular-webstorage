@@ -72,7 +72,7 @@
  *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
  * @date 2013-12-19
- * @version 0.10.1
+ * @version 0.10.2
  *
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
@@ -151,6 +151,11 @@
   * - Updated the API documentation with `setErrorName()` and `setStoragePrefix()`.
   * - Added the list of contributors to README.md.
   * - Added this changelog to README.md.
+  *
+  * v0.10.2
+  * - Refactored `setErrorName()`, `setStorageOrder()` and `setStoragePrefix()`
+  *   from being only setters into also being getters. To reflect this, they
+  *   have been renamed `errorName()`, `order()` and `prefix()` respectively.
   */
 
 /**

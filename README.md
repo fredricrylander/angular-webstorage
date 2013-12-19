@@ -19,10 +19,10 @@ The service provides the following generic methods:
 * `get(key [, all])`        -- return the specified value (storage according to 'order')
 * `remove(key [, all])`     -- remove a key/value pair from storage (storage according to 'order')
 * `clear(all)`              -- remove all key/value pairs from storage (storage according to 'order')
-* `setErrorName(str)`       -- alter the name of the event that is broadcast over the $rootScope on errors
-* `setStoragePrefix(str)`   -- alter the prefix used for keys while operating on storage values
-* `setStorageOrder(order)`  -- alter the order by which storage models are iterated
-
+* `errorName(str)`          -- get or set the name of the event that is broadcast over the $rootScope on errors
+* `prefix(str)`             -- get or set the prefix used for keys while operating on storage values
+* `order(array)`            -- get or set the order by which storage models are iterated
+ 
 
 It also provides the following direct APIs:
 
@@ -54,7 +54,7 @@ Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 2013-12-19
 
 ## Module Version
-0.10.1
+0.10.2
 
 ## Requirements
 This module was built for AngularJS v1.0.5.
@@ -71,8 +71,7 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
 * David Rodriguez (https://github.com/programmerdave)
 * (https://github.com/jswxwxf)
 
-Change Log
-----------
+## Change Log
 * v0.9.0
     - Initial commit.
 
@@ -119,6 +118,11 @@ Change Log
     - Updated the API documentation with `setErrorName()` and `setStoragePrefix()`.
     - Added the list of contributors to README.md.
     - Added this changelog to README.md.
+
+* v0.10.2
+    - Refactored `setErrorName()`, `setStorageOrder()` and `setStoragePrefix()`
+      from being only setters into also being getters. To reflect this, they
+      have been renamed `errorName()`, `order()` and `prefix()` respectively.
 
 ## License
     The MIT License
