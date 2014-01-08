@@ -19,7 +19,7 @@
  * If the client does not support local or session web storage the module will
  * try to mimic them by setting cookies on the current document.
  *
- * All errors will be broadcast via the `$rootScope` under a specific name 
+ * All errors will be broadcast via the `$rootScope` under a specific name
  * (defaults to: `webStorage.notification.error`.)
  *
  * The service provides the following generic methods:
@@ -71,8 +71,8 @@
  * </code>
  *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
- * @date 2013-12-19
- * @version 0.10.2
+ * @date 2014-01-08
+ * @version 0.10.3
  *
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
@@ -156,6 +156,10 @@
   * - Refactored `setErrorName()`, `setStorageOrder()` and `setStoragePrefix()`
   *   from being only setters into also being getters. To reflect this, they
   *   have been renamed `errorName()`, `order()` and `prefix()` respectively.
+  *
+  * v0.10.3
+  * - Updated the AngularJS version in bower.json so that it now uses semantic
+  *   versioning (semver).
   */
 
 /**
@@ -414,7 +418,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	};
 
 	/**
-	 * Getter/setter for the error name that is used when broadcasting errors 
+	 * Getter/setter for the error name that is used when broadcasting errors
 	 * on the $rootScope.
 	 *
 	 * @param {string} newErrorName (Optional) The new error name.
@@ -433,13 +437,13 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	};
 
 	/**
-	 * Getter/setter for the order in which the service selects what storage 
+	 * Getter/setter for the order in which the service selects what storage
 	 * model to use.
 	 *
 	 * @param {Array} newOrder (Optional) An array of string names of the order
 	 *   to query storage engines. Recognized names are 'local', 'session'
 	 *   and 'memory'. All other names are ignored.
-	 * @return {Array} The current (on get) or previous (on set) order as an 
+	 * @return {Array} The current (on get) or previous (on set) order as an
 	 *   array of strings.
 	 * @see defaultOrder
 	 */
@@ -455,11 +459,11 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	};
 
 	/**
-	 * Getter/setter for the prefix that is used when adding, getting or 
+	 * Getter/setter for the prefix that is used when adding, getting or
 	 * removing data.
 	 *
 	 * @param {string} newPrefix (Optional) The new prefix.
-	 * @return {mixed} The current (on get) or previous (on set) prefix, 
+	 * @return {mixed} The current (on get) or previous (on set) prefix,
 	 *   or false on error.
 	 * @see defaultPrefix
 	 */

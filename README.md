@@ -22,7 +22,7 @@ The service provides the following generic methods:
 * `errorName(str)`       -- get or set the name of the event that is broadcast over the $rootScope on errors
 * `prefix(str)`          -- get or set the prefix used for keys while operating on storage values
 * `order(array)`         -- get or set the order by which storage models are iterated
- 
+
 
 It also provides the following direct APIs:
 
@@ -51,10 +51,10 @@ It also provides the following direct APIs:
 Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 
 ## Date
-2013-12-19
+2014-01-08
 
 ## Module Version
-0.10.2
+0.10.3
 
 ## Requirements
 This module was built for AngularJS v1.0.5.
@@ -123,6 +123,10 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
     - Refactored `setErrorName()`, `setStorageOrder()` and `setStoragePrefix()`
       from being only setters into also being getters. To reflect this, they
       have been renamed `errorName()`, `order()` and `prefix()` respectively.
+
+* v0.10.3
+    - Updated the AngularJS version in bower.json so that it now uses semantic
+      versioning (semver).
 
 ## License
     The MIT License

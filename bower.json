@@ -1,6 +1,6 @@
 {
   "name": "angular-webstorage",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "main": "angular-webstorage.js",
   "ignore": [
     "**/.*",
@@ -8,6 +8,6 @@
     "components"
   ],
   "dependencies": {
-    "angular": "~1.0 || ~1.1"
+    "angular": "1.x.x"
   }
 }
