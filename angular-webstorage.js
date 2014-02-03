@@ -459,6 +459,16 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	};
 
 	/**
+	 * Check if a key exists.
+	 *
+	 * @param {string} key The key to test.
+	 * @return {bool} the test result.
+	 */
+        webStorage.hasKey = function (key) {
+            return null == webStorage.get(key);
+	};
+
+	/**
 	 * Getter/setter for the prefix that is used when adding, getting or
 	 * removing data.
 	 *
