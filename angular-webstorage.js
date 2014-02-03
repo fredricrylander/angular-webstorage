@@ -465,7 +465,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @return {bool} the test result.
 	 */
         webStorage.hasKey = function (key) {
-            return null == webStorage.get(key);
+            return null !== webStorage.get(key);
 	};
 
 	/**
