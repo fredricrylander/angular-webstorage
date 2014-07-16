@@ -28,6 +28,7 @@
  * - isSupported          -- boolean flag indicating client support status (local or session storage)
  * - add(key, value, all) -- add a value to storage under the specific key (storage according to 'order')
  * - get(key, all)        -- return the specified value (storage according to 'order')
+ * - has(key, all)        -- checks if the given key exists (storage according to 'order')
  * - remove(key, all)     -- remove a key/value pair from storage (storage according to 'order')
  * - clear(all)           -- remove all key/value pairs from storage (storage according to 'order')
  * - errorName(str)       -- get or set the name of the event that is broadcast over the $rootScope on errors
@@ -40,6 +41,7 @@
  * - isSupported     -- boolean flag indicating client support status (local storage)
  * - add(key, value) -- add a value to storage under the specific key (local storage)
  * - get(key)        -- return the specified value (local storage)
+ * - has(key)        -- checks if the given key exists (local storage)
  * - remove(key)     -- remove a key/value pair from storage (local storage)
  * - clear()         -- remove all key/value pairs from storage (local storage)
  *
@@ -47,6 +49,7 @@
  * - isSupported     -- boolean flag indicating client support status (session storage)
  * - add(key, value) -- add a value to storage under the specific key (session storage)
  * - get(key)        -- return the specified value (session storage)
+ * - has(key)        -- checks if the given key exists (session storage)
  * - remove(key)     -- remove a key/value pair from storage (session storage)
  * - clear()         -- remove all key/value pairs from storage (session storage)
  *
@@ -54,12 +57,13 @@
  * - isSupported     -- boolean true, the in-memory storage is always supported
  * - add(key, value) -- add a value to storage under the specific key (in-memory storage)
  * - get(key)        -- return the specified value (in-memory storage)
+ * - has(key)        -- checks if the given key exists (in-memory storage)
  * - remove(key)     -- remove a key/value pair from storage (in-memory storage)
  * - clear()         -- remove all key/value pairs from storage (in-memory storage)
  *
  *
  * Requirements
- * This module was built for AngularJS v1.0.5.
+ * This module was originally built for AngularJS v1.0.5.
  *
  * Usage
  * Add `webStorageModule` to your app's dependencies. Then inject `webStorage`
@@ -71,17 +75,19 @@
  * </code>
  *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
- * @date 2014-01-08
- * @version 0.10.3
+ * @date 2014-07-16
+ * @version 0.10.5
  *
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
  * @contributor David Rodriguez (https://github.com/programmerdave)
  * @contrubutor (https://github.com/jswxwxf)
+ * @contrubutor Jose Andres Ramirez (https://github.com/joanrm20)
+ * @contrubutor (https://github.com/gorjuce)
  *
  *
  * The MIT License
- * Copyright (c) 2013 Fredric Rylander
+ * Copyright (c) 2013-2014 Fredric Rylander
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -160,6 +166,14 @@
   * v0.10.3
   * - Updated the AngularJS version in bower.json so that it now uses semantic
   *   versioning (semver).
+  *
+  * v0.10.4
+  * - Added the minified version of the source, pull-request by Jose Andres
+  *   Ramirez (joanrm20).
+  *
+  * v0.11.0
+  * - Added the `has` method in order to check if a given key exists in web
+  *   storage or not, as suggested by (gorjuce).
   */
 
 /**
@@ -257,6 +271,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			isSupported: hasLocalStorage,
 			add: addToLocal,
 			get: getFromLocal,
+			has: hasInLocal,
 			remove: removeFromLocal,
 			clear: clearLocal
 		},
@@ -271,6 +286,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			isSupported: hasSessionStorage,
 			add: addToSession,
 			get: getFromSession,
+			has: hasInSession,
 			remove: removeFromSession,
 			clear: clearSession
 		},
@@ -285,6 +301,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			isSupported: true,
 			add: addToMemory,
 			get: getFromMemory,
+			has: hasInMemory,
 			remove: removeFromMemory,
 			clear: clearMemory
 		}
@@ -349,6 +366,19 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			}
 		}
 		return null;
+	};
+
+	/**
+	 * Check if a key exists.
+	 *
+	 * @param {string} key Name of the key to test.
+	 * @param {boolean} allEngines If false only the first supported storage
+	 *   engine will be queried for the given key, otherwise all engines will
+	 *   be queried in turn until a non-null value is found. Default is true.
+	 * @return {boolean} True if the key exists, else false.
+	 */
+	webStorage.has = function (key, allEngines) {
+		return null !== webStorage.get(key, allEngines);
 	};
 
 	/**
@@ -583,6 +613,39 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	function getFromMemory(key) {
 		return key in ram ? ram[key] : null;
+	}
+
+	/**
+	 * Check if the given key exists in the local web store.
+	 *
+	 * @param {string} key The name of the value.
+	 * @return {boolean} True if the key exists, else false.
+	 * @private
+	 */
+	function hasInLocal(key) {
+		return null !== getFromLocal(key);
+	}
+
+	/**
+	 * Check if the given key exists in the session web store.
+	 *
+	 * @param {string} key The name of the value.
+	 * @return {boolean} True if the key exists, else false.
+	 * @private
+	 */
+	function hasInSession(key) {
+		return null !== getFromSession(key);
+	}
+
+	/**
+	 * Check if the given key exists in the in-memory store.
+	 *
+	 * @param {string} key The name of the value.
+	 * @return {boolean} True if the key exists, else false.
+	 * @private
+	 */
+	function hasInMemory(key) {
+		return null !== getFromMemory(key);
 	}
 
 	/**

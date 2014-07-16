@@ -17,6 +17,7 @@ The service provides the following generic methods:
 * `isSupported`          -- boolean flag indicating client support status (local or session storage)
 * `add(key, value, all)` -- add a value to storage under the specific key (storage according to 'order')
 * `get(key, all)`        -- return the specified value (storage according to 'order')
+* `has(key, all)`        -- checks if the given key exists (storage according to 'order')
 * `remove(key, all)`     -- remove a key/value pair from storage (storage according to 'order')
 * `clear(all)`           -- remove all key/value pairs from storage (storage according to 'order')
 * `errorName(str)`       -- get or set the name of the event that is broadcast over the $rootScope on errors
@@ -30,6 +31,7 @@ It also provides the following direct APIs:
 * `isSupported`     -- boolean flag indicating client support status (local storage)
 * `add(key, value)` -- add a value to storage under the specific key (local storage)
 * `get(key)`        -- return the specified value (local storage)
+* `has(key)`        -- checks if the given key exists (local storage)
 * `remove(key)`     -- remove a key/value pair from storage (local storage)
 * `clear()`         -- remove all key/value pairs from storage (local storage)
 
@@ -37,6 +39,7 @@ It also provides the following direct APIs:
 * `isSupported`     -- boolean flag indicating client support status (session storage)
 * `add(key, value)` -- add a value to storage under the specific key (session storage)
 * `get(key)`        -- return the specified value (session storage)
+* `has(key)`        -- checks if the given key exists (session storage)
 * `remove(key)`     -- remove a key/value pair from storage (session storage)
 * `clear()`         -- remove all key/value pairs from storage (session storage)
 
@@ -44,6 +47,7 @@ It also provides the following direct APIs:
 * `isSupported`     -- boolean true, the in-memory storage is always supported
 * `add(key, value)` -- add a value to storage under the specific key (in-memory storage)
 * `get(key)`        -- return the specified value (in-memory storage)
+* `has(key)`        -- checks if the given key exists (in-memory storage)
 * `remove(key)`     -- remove a key/value pair from storage (in-memory storage)
 * `clear()`         -- remove all key/value pairs from storage (in-memory storage)
 
@@ -51,13 +55,13 @@ It also provides the following direct APIs:
 Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 
 ## Date
-2014-01-08
+2014-07-16
 
 ## Module Version
-0.10.3
+0.10.5
 
 ## Requirements
-This module was built for AngularJS v1.0.5.
+This module was originally built for AngularJS v1.0.5.
 
 ## Usage
 Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into any controller that needs to use it, e.g.:
@@ -70,6 +74,8 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
 * David Chang (https://github.com/hasdavidc)
 * David Rodriguez (https://github.com/programmerdave)
 * (https://github.com/jswxwxf)
+* Jose Andres Ramirez (https://github.com/joanrm20)
+* (https://github.com/gorjuce)
 
 ## Change Log
 * v0.9.0
@@ -128,9 +134,17 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
     - Updated the AngularJS version in bower.json so that it now uses semantic
       versioning (semver).
 
+* v0.10.4
+    - Added the minified version of the source in `angular-webstorage.min.js`,
+      pull-request by Jose Andres Ramirez (joanrm20).
+
+* v0.11.0
+    - Added the `has` method in order to check if a given key exists in local
+      storage or not, as suggested by (gorjuce).
+
 ## License
     The MIT License
-    Copyright (c) 2013 Fredric Rylander
+    Copyright (c) 2013-2014 Fredric Rylander
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
