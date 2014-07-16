@@ -58,7 +58,7 @@ Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 2014-07-16
 
 ## Module Version
-0.10.5
+0.11.0
 
 ## Requirements
 This module was originally built for AngularJS v1.0.5.
