@@ -3,7 +3,7 @@ WebStorage Service for AngularJS
 
 The webStorage service has both a generic and direct API. The generic API will check for client support and preferred order before altering a specific storage value, trying to degrade gracefully according to a set heuristic. The direct APIs works with either the client's local, session or the module's own in-memory storage engines.
 
-The selection heuristics for the generic API is mainly dictated by a set order (defaults to ['local', 'session', 'memory'].) If the client has no support for the specified storage engine then the service will try to fall back on the next specified engine and so forth.
+The selection heuristics for the generic API is mainly dictated by a set order (defaults to `['local', 'session', 'memory']`.) If the client has no support for the specified storage engine then the service will try to fall back on the next specified engine and so forth.
 
 NOTE: The in-memory storage should really be seen as a last resort since all its values will be lost on page reload (somewhat negating the whole idea of client web storage!)
 
@@ -22,7 +22,7 @@ The service provides the following generic methods:
 * `clear(all)`           -- remove all key/value pairs from storage (storage according to 'order')
 * `errorName(str)`       -- get or set the name of the event that is broadcast over the $rootScope on errors
 * `prefix(str)`          -- get or set the prefix used for keys while operating on storage values
-* `order(array)`         -- get or set the order by which storage models are iterated
+* `order(array)`         -- get or set the order by which storage models are iterated (defaults to ['local', 'session', 'memory'])
 
 
 It also provides the following direct APIs:
