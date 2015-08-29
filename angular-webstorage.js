@@ -577,7 +577,9 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			try {
 				var value = localStorage.getItem(prefix + key);
 				return value && JSON.parse(value);
-			} catch (e) { croak(e); return null; }
+			} catch (e) { 
+				croak(e); 
+			}
 		}
 		return null;
 	}
@@ -597,7 +599,9 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			try {
 				var value = sessionStorage.getItem(prefix + key);
 				return value && JSON.parse(value);
-			} catch (e) { croak(e); return null; }
+			} catch (e) { 
+				croak(e); 
+			}
 		}
 		return null;
 	}
