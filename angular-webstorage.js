@@ -26,7 +26,8 @@
  *
  * webStorage
  * - isSupported          -- boolean flag indicating client support status (local or session storage)
- * - add(key, value, all) -- add a value to storage under the specific key (storage according to 'order')
+ * - add(key, value, all) -- [DEPRECATED: use `set`] add a value to storage under the specific key (storage according to 'order')
+ * - set(key, value, all) -- add or set a value in storage under the specific key (storage according to 'order')
  * - get(key, all)        -- return the specified value (storage according to 'order')
  * - has(key, all)        -- checks if the given key exists (storage according to 'order')
  * - remove(key, all)     -- remove a key/value pair from storage (storage according to 'order')
@@ -39,7 +40,8 @@
  *
  * webStorage.local
  * - isSupported     -- boolean flag indicating client support status (local storage)
- * - add(key, value) -- add a value to storage under the specific key (local storage)
+ * - add(key, value) -- [DEPRECATED: use `set`] add a value to storage under the specific key (local storage)
+ * - set(key, value) -- add or update a value in storage under the specific key (local storage)
  * - get(key)        -- return the specified value (local storage)
  * - has(key)        -- checks if the given key exists (local storage)
  * - remove(key)     -- remove a key/value pair from storage (local storage)
@@ -47,7 +49,8 @@
  *
  * webStorage.session
  * - isSupported     -- boolean flag indicating client support status (session storage)
- * - add(key, value) -- add a value to storage under the specific key (session storage)
+ * - add(key, value) -- [DEPRECATED: use `set`] add a value to storage under the specific key (session storage)
+ * - set(key, value) -- add or set a value in storage under the specific key (session storage)
  * - get(key)        -- return the specified value (session storage)
  * - has(key)        -- checks if the given key exists (session storage)
  * - remove(key)     -- remove a key/value pair from storage (session storage)
@@ -55,7 +58,8 @@
  *
  * webStorage.memory
  * - isSupported     -- boolean true, the in-memory storage is always supported
- * - add(key, value) -- add a value to storage under the specific key (in-memory storage)
+ * - add(key, value) -- [DEPRECATED: use `set`] add a value to storage under the specific key (in-memory storage)
+ * - set(key, value) -- add or set a value in storage under the specific key (in-memory storage)
  * - get(key)        -- return the specified value (in-memory storage)
  * - has(key)        -- checks if the given key exists (in-memory storage)
  * - remove(key)     -- remove a key/value pair from storage (in-memory storage)
@@ -75,19 +79,20 @@
  * </code>
  *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
- * @date 2014-07-16
- * @version 0.11.0
+ * @date 2015-08-29
+ * @version 0.12.0
  *
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
  * @contributor David Rodriguez (https://github.com/programmerdave)
- * @contrubutor (https://github.com/jswxwxf)
- * @contrubutor Jose Andres Ramirez (https://github.com/joanrm20)
- * @contrubutor (https://github.com/gorjuce)
- *
+ * @contributor (https://github.com/jswxwxf)
+ * @contributor Jose Andres Ramirez (https://github.com/joanrm20)
+ * @contributor (https://github.com/gorjuce)
+ * @contributor Sam Blowes (https://github.com/blowsie)
+ * @contributor Timothee Moulin (https://github.com/timotheemoulin)
  *
  * The MIT License
- * Copyright (c) 2013-2014 Fredric Rylander
+ * Copyright (c) 2013-2015 Fredric Rylander
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -174,6 +179,12 @@
   * v0.11.0
   * - Added the `has` method in order to check if a given key exists in web
   *   storage or not, as suggested by (gorjuce).
+  *
+  * v0.12.0
+  * - Renamed `add` to `set` in order to mirror the underlying web storage
+  *   interface, as suggested by Sam Blowes (blowsie) and Timothee Moulin
+  *   (timotheemoulin). `add` has been deprecated in version 0.12.0 and
+  *   will be deleted in version 1.0.
   */
 
 /**
@@ -269,7 +280,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 		 */
 		local: {
 			isSupported: hasLocalStorage,
-			add: addToLocal,
+			add: addToLocal, // Deprecated: use `set`.
+			set: setInLocal,
 			get: getFromLocal,
 			has: hasInLocal,
 			remove: removeFromLocal,
@@ -284,7 +296,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 		 */
 		session: {
 			isSupported: hasSessionStorage,
-			add: addToSession,
+			add: addToSession, // Deprecated: use `set`.
+			set: setInSession,
 			get: getFromSession,
 			has: hasInSession,
 			remove: removeFromSession,
@@ -299,7 +312,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 		 */
 		memory: {
 			isSupported: true,
-			add: addToMemory,
+			add: addToMemory, // Deprecated: use `set`.
+			set: setInMemory,
 			get: getFromMemory,
 			has: hasInMemory,
 			remove: removeFromMemory,
@@ -321,15 +335,36 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 *   only add to the first supported storage engine. Default is false.
 	 * @return {boolean} True on success, else false. If 'allEngines' is true
 	 *   then success is when the value was added to at least one storage engine.
+	 * @deprecated Since version 0.12.0. Will be deleted in version 1.0. Use `set` instead.
 	 */
 	webStorage.add = function (key, value, allEngines) {
+		console.warn('angular-webstorage.js -- `add()` had been deprecated, use `set()` instead');
+		return webStorage.set(key, value, allEngines);
+	};
+
+	/**
+	 * Setter for the key/value web store.
+	 *
+	 * NOTE: This method will use local or session storage depending on the
+	 * client's support as well as the order set in the module constant
+	 * 'order'. If 'allEngines' is true (default is false) then the key/value
+	 * pair will be added to all available storage engines.
+	 *
+	 * @param {string} key Name to store the given value under.
+	 * @param {mixed} value The value to store.
+	 * @param {boolean} allEngines If true, add to all available engines, else
+	 *   only add to the first supported storage engine. Default is false.
+	 * @return {boolean} True on success, else false. If 'allEngines' is true
+	 *   then success is when the value was added to at least one storage engine.
+	 */
+	webStorage.set = function (key, value, allEngines) {
 		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : false;
 		var result = false;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
 			var engine = webStorage[order[ith]];
 			if (engine.isSupported) {
-				result = engine.add(key, value) || result;
+				result = engine.set(key, value) || result;
 				if (!allEngines)
 					return result;
 			}
@@ -518,13 +553,11 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @param {mixed} value The value to set (all values are stored as JSON.)
 	 * @return {boolean} True on success, else false.
 	 * @private
+	 * @deprecated Since version 0.12.0. Will be deleted in version 1.0. Use `setInLocal` instead.
 	 */
 	function addToLocal(key, value) {
-		if (hasLocalStorage) {
-			try { localStorage.setItem(prefix + key, JSON.stringify(value)); } catch (e) { return croak(e); }
-			return true;
-		}
-		return false;
+		console.warn('angular-webstorage.js -- `add()` had been deprecated, use `set()` instead');
+		return setInLocal(key, value);
 	}
 
 	/**
@@ -538,13 +571,11 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @param {mixed} value The value to set (all values are stored as JSON.)
 	 * @return {boolean} True on success, else false.
 	 * @private
+	 * @deprecated Since version 0.12.0. Will be deleted in version 1.0. Use `setInSession` instead.
 	 */
 	function addToSession(key, value) {
-		if (hasSessionStorage) {
-			try { sessionStorage.setItem(prefix + key, JSON.stringify(value)); } catch (e) { return croak(e); }
-			return true;
-		}
-		return false;
+		console.warn('angular-webstorage.js -- `add()` had been deprecated, use `set()` instead');
+		return setInSession(key, value);
 	}
 
 	/**
@@ -556,8 +587,64 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @param {mixed} value The value to set.
 	 * @return {boolean} True on success, else false.
 	 * @private
+	 * @deprecated Since version 0.12.0. Will be deleted in version 1.0. Use `setInMemory` instead.
 	 */
 	function addToMemory(key, value) {
+		console.warn('angular-webstorage.js -- `add()` had been deprecated, use `set()` instead');
+		return setInMemory(key, value);
+	}
+
+	/**
+	 * Add or update the specified key/value pair in the local web store.
+	 *
+	 * NOTE: The web store API only specifies that implementations should be able to
+	 * handle string values, this method will therefore stringify all values into
+	 * JSON strings before storing them.
+	 *
+	 * @param {string} key The name to store the value under.
+	 * @param {mixed} value The value to set (all values are stored as JSON.)
+	 * @return {boolean} True on success, else false.
+	 * @private
+	 */
+	function setInLocal(key, value) {
+		if (hasLocalStorage) {
+			try { localStorage.setItem(prefix + key, JSON.stringify(value)); } catch (e) { return croak(e); }
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Add or update the specified key/value pair in the session web store.
+	 *
+	 * NOTE: The web store API only specifies that implementations should be able to
+	 * handle string values, this method will therefore stringify all values into
+	 * JSON strings before storing them.
+	 *
+	 * @param {string} key The name to store the value under.
+	 * @param {mixed} value The value to set (all values are stored as JSON.)
+	 * @return {boolean} True on success, else false.
+	 * @private
+	 */
+	function setInSession(key, value) {
+		if (hasSessionStorage) {
+			try { sessionStorage.setItem(prefix + key, JSON.stringify(value)); } catch (e) { return croak(e); }
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Add or update the specified key/value pair in the in-memory store.
+	 *
+	 * NOTE: The in-memory storage does not use prefixes.
+	 *
+	 * @param {string} key The name to store the value under.
+	 * @param {mixed} value The value to set.
+	 * @return {boolean} True on success, else false.
+	 * @private
+	 */
+	function setInMemory(key, value) {
 		ram[key] = value;
 		return true;
 	}
@@ -691,7 +778,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 		delete ram[key];
 		return true;
 	}
-
+	
 	/**
 	 * Clear all key/value pairs form the local store.
 	 *

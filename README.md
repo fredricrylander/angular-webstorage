@@ -15,7 +15,8 @@ The service provides the following generic methods:
 
 `webStorage`
 * `isSupported`          -- boolean flag indicating client support status (local or session storage)
-* `add(key, value, all)` -- add a value to storage under the specific key (storage according to 'order')
+* `add(key, value, all)` -- [DEPRECATED: use `set`] add a value to storage under the specific key (storage according to 'order')
+* `set(key, value, all)` -- add or set a value in storage under the specific key (storage according to 'order')
 * `get(key, all)`        -- return the specified value (storage according to 'order')
 * `has(key, all)`        -- checks if the given key exists (storage according to 'order')
 * `remove(key, all)`     -- remove a key/value pair from storage (storage according to 'order')
@@ -29,7 +30,8 @@ It also provides the following direct APIs:
 
 `webStorage.local`
 * `isSupported`     -- boolean flag indicating client support status (local storage)
-* `add(key, value)` -- add a value to storage under the specific key (local storage)
+* `add(key, value)` -- [DEPRECATED: use `set`] add a value to storage under the specific key (local storage)
+* `set(key, value)` -- add or update a value in storage under the specific key (local storage)
 * `get(key)`        -- return the specified value (local storage)
 * `has(key)`        -- checks if the given key exists (local storage)
 * `remove(key)`     -- remove a key/value pair from storage (local storage)
@@ -37,7 +39,8 @@ It also provides the following direct APIs:
 
 `webStorage.session`
 * `isSupported`     -- boolean flag indicating client support status (session storage)
-* `add(key, value)` -- add a value to storage under the specific key (session storage)
+* `add(key, value)` -- [DEPRECATED: use `set`] add a value to storage under the specific key (session storage)
+* `set(key, value)` -- add or set a value in storage under the specific key (session storage)
 * `get(key)`        -- return the specified value (session storage)
 * `has(key)`        -- checks if the given key exists (session storage)
 * `remove(key)`     -- remove a key/value pair from storage (session storage)
@@ -45,7 +48,8 @@ It also provides the following direct APIs:
 
 `webStorage.memory`
 * `isSupported`     -- boolean true, the in-memory storage is always supported
-* `add(key, value)` -- add a value to storage under the specific key (in-memory storage)
+* `add(key, value)` -- [DEPRECATED: use `set`] add a value to storage under the specific key (in-memory storage)
+* `set(key, value)` -- add or set a value in storage under the specific key (in-memory storage)
 * `get(key)`        -- return the specified value (in-memory storage)
 * `has(key)`        -- checks if the given key exists (in-memory storage)
 * `remove(key)`     -- remove a key/value pair from storage (in-memory storage)
@@ -55,10 +59,10 @@ It also provides the following direct APIs:
 Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 
 ## Date
-2014-07-16
+2015-08-29
 
 ## Module Version
-0.11.0
+0.12.0
 
 ## Requirements
 This module was originally built for AngularJS v1.0.5.
@@ -76,6 +80,8 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
 * (https://github.com/jswxwxf)
 * Jose Andres Ramirez (https://github.com/joanrm20)
 * (https://github.com/gorjuce)
+* Sam Blowes (https://github.com/blowsie)
+* Timothee Moulin (https://github.com/timotheemoulin)
 
 ## Change Log
 * v0.9.0
@@ -141,6 +147,12 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
 * v0.11.0
     - Added the `has` method in order to check if a given key exists in local
       storage or not, as suggested by (gorjuce).
+
+* v0.12.0
+    - Renamed `add` to `set` in order to mirror the underlying web storage
+      interface, as suggested by Sam Blowes (blowsie) and Timothee Moulin
+      (timotheemoulin). `add` has been deprecated in version 0.12.0 and
+      will be deleted in version 1.0.
 
 ## License
     The MIT License

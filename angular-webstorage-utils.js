@@ -52,12 +52,12 @@
  *
  *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
- * @date 2013-12-19
- * @version 0.1.0
+ * @date 2015-08-29
+ * @version 0.1.1
  *
  *
  * The MIT License
- * Copyright (c) 2013 Fredric Rylander
+ * Copyright (c) 2013-2015 Fredric Rylander
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -84,6 +84,8 @@
   * v0.1.0
   * - Initial commit.
   *
+  * v0.1.1
+  * - Now using `webStorage.set()` instead of deprecated `webStorage.add()`.
   */
 
 /**
@@ -173,7 +175,7 @@ angular.module('webStorageModule').run(['webStorage', function (webStorage) {
 		}
 		
 		var result = value.pop();
-		engine.add(key, value);
+		engine.set(key, value);
 		return result;
 	}
 
@@ -198,7 +200,7 @@ angular.module('webStorageModule').run(['webStorage', function (webStorage) {
 			currentValue = [currentValue];
 		
 		currentValue.push(value);
-		return engine.add(key, currentValue) ? currentValue.length : false;
+		return engine.set(key, currentValue) ? currentValue.length : false;
 	}
 	
 	/**
@@ -227,7 +229,7 @@ angular.module('webStorageModule').run(['webStorage', function (webStorage) {
 		}
 		
 		var result = value.shift();
-		engine.add(key, value);
+		engine.set(key, value);
 		return result;
 	}
 	
@@ -252,7 +254,7 @@ angular.module('webStorageModule').run(['webStorage', function (webStorage) {
 			currentValue = [currentValue];
 		
 		currentValue.unshift(value);
-		return engine.add(key, currentValue) ? currentValue.length : false;
+		return engine.set(key, currentValue) ? currentValue.length : false;
 	};
 	
 }]);
