@@ -8,7 +8,7 @@
  * or the module's own in-memory storage engines.
  *
  * The selection heuristics for the generic API is mainly dictated by a set
- * order (defaults to ['local', 'session', 'memory'].) If the client has no
+ * order (defaults to `['local', 'session', 'memory']`.) If the client has no
  * support for the specified storage engine then the service will try to fall
  * back on the next specified engine and so forth.
  *
@@ -33,7 +33,7 @@
  * - clear(all)           -- remove all key/value pairs from storage (storage according to 'order')
  * - errorName(str)       -- get or set the name of the event that is broadcast over the $rootScope on errors
  * - prefix(str)          -- get or set the prefix used for keys while operating on storage values
- * - order(array)         -- get or set the order by which storage models are iterated
+ * - order(array)         -- get or set the order by which storage models are iterated (defaults to ['local', 'session', 'memory'])
  *
  * It also provides the following direct APIs:
  *
