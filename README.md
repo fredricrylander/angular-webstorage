@@ -166,7 +166,10 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
    - Added the `length` method in order to fetch the number of items
      stored in a storage engine.
    - Added the `key` method in order to be able to fetch the name of the
-     nth key in a storage engine. 
+     nth key in a storage engine.
+
+* v0.13.1
+   - Refactored some strings to var's in order to help minification.
 
 ## License
     The MIT License
