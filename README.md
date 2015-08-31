@@ -19,6 +19,8 @@ The service provides the following generic methods:
 * `set(key, value, all)` -- add or set a value in storage under the specific key (storage according to 'order')
 * `get(key, all)`        -- return the specified value (storage according to 'order')
 * `has(key, all)`        -- checks if the given key exists (storage according to 'order')
+* `key(index, all)`      -- returns the name of the nth key (storage according to 'order')
+* `length(all)`          -- returns the number of items in the key/value store (storage according to 'order')
 * `remove(key, all)`     -- remove a key/value pair from storage (storage according to 'order')
 * `clear(all)`           -- remove all key/value pairs from storage (storage according to 'order')
 * `errorName(str)`       -- get or set the name of the event that is broadcast over the $rootScope on errors
@@ -34,6 +36,8 @@ It also provides the following direct APIs:
 * `set(key, value)` -- add or update a value in storage under the specific key (local storage)
 * `get(key)`        -- return the specified value (local storage)
 * `has(key)`        -- checks if the given key exists (local storage)
+* `key(index)`      -- return the name of the nth key (local storage)
+* `length()`        -- returns the number of items in storage (local storage)
 * `remove(key)`     -- remove a key/value pair from storage (local storage)
 * `clear()`         -- remove all key/value pairs from storage (local storage)
 
@@ -43,6 +47,8 @@ It also provides the following direct APIs:
 * `set(key, value)` -- add or set a value in storage under the specific key (session storage)
 * `get(key)`        -- return the specified value (session storage)
 * `has(key)`        -- checks if the given key exists (session storage)
+* `key(index)`      -- return the name of the nth key (session storage)
+* `length()`        -- returns the number of items in storage (session storage)
 * `remove(key)`     -- remove a key/value pair from storage (session storage)
 * `clear()`         -- remove all key/value pairs from storage (session storage)
 
@@ -52,6 +58,8 @@ It also provides the following direct APIs:
 * `set(key, value)` -- add or set a value in storage under the specific key (in-memory storage)
 * `get(key)`        -- return the specified value (in-memory storage)
 * `has(key)`        -- checks if the given key exists (in-memory storage)
+* `key(index)`      -- return the name of the nth key (in-memory storage)
+* `length()`        -- returns the number of items in storage (in-memory storage)
 * `remove(key)`     -- remove a key/value pair from storage (in-memory storage)
 * `clear()`         -- remove all key/value pairs from storage (in-memory storage)
 
@@ -59,10 +67,10 @@ It also provides the following direct APIs:
 Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 
 ## Date
-2015-08-29
+2015-08-31
 
 ## Module Version
-0.12.0
+0.13.0
 
 ## Requirements
 This module was originally built for AngularJS v1.0.5.
@@ -153,6 +161,12 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
       interface, as suggested by Sam Blowes (blowsie) and Timothee Moulin
       (timotheemoulin). `add` has been deprecated in version 0.12.0 and
       will be deleted in version 1.0.
+      
+* v0.13.0
+   - Added the `length` method in order to fetch the number of items
+     stored in a storage engine.
+   - Added the `key` method in order to be able to fetch the name of the
+     nth key in a storage engine. 
 
 ## License
     The MIT License

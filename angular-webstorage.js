@@ -30,6 +30,8 @@
  * - set(key, value, all) -- add or set a value in storage under the specific key (storage according to 'order')
  * - get(key, all)        -- return the specified value (storage according to 'order')
  * - has(key, all)        -- checks if the given key exists (storage according to 'order')
+ * - key(index, all)      -- returns the name of the nth key (storage according to 'order')
+ * - length(all)          -- returns the number of items in the key/value store (storage according to 'order')
  * - remove(key, all)     -- remove a key/value pair from storage (storage according to 'order')
  * - clear(all)           -- remove all key/value pairs from storage (storage according to 'order')
  * - errorName(str)       -- get or set the name of the event that is broadcast over the $rootScope on errors
@@ -44,6 +46,8 @@
  * - set(key, value) -- add or update a value in storage under the specific key (local storage)
  * - get(key)        -- return the specified value (local storage)
  * - has(key)        -- checks if the given key exists (local storage)
+ * - key(index)      -- return the name of the nth key (local storage)
+ * - length()        -- returns the number of items in storage (local storage)
  * - remove(key)     -- remove a key/value pair from storage (local storage)
  * - clear()         -- remove all key/value pairs from storage (local storage)
  *
@@ -53,6 +57,8 @@
  * - set(key, value) -- add or set a value in storage under the specific key (session storage)
  * - get(key)        -- return the specified value (session storage)
  * - has(key)        -- checks if the given key exists (session storage)
+ * - key(index)      -- return the name of the nth key (session storage)
+ * - length()        -- returns the number of items in storage (session storage)
  * - remove(key)     -- remove a key/value pair from storage (session storage)
  * - clear()         -- remove all key/value pairs from storage (session storage)
  *
@@ -62,6 +68,8 @@
  * - set(key, value) -- add or set a value in storage under the specific key (in-memory storage)
  * - get(key)        -- return the specified value (in-memory storage)
  * - has(key)        -- checks if the given key exists (in-memory storage)
+ * - key(index)      -- return the name of the nth key (in-memory storage)
+ * - length()        -- returns the number of items in storage (in-memory storage)
  * - remove(key)     -- remove a key/value pair from storage (in-memory storage)
  * - clear()         -- remove all key/value pairs from storage (in-memory storage)
  *
@@ -79,8 +87,8 @@
  * </code>
  *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
- * @date 2015-08-29
- * @version 0.12.0
+ * @date 2015-08-31
+ * @version 0.13.0
  *
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
@@ -185,6 +193,12 @@
   *   interface, as suggested by Sam Blowes (blowsie) and Timothee Moulin
   *   (timotheemoulin). `add` has been deprecated in version 0.12.0 and
   *   will be deleted in version 1.0.
+  *
+  * v0.13.0
+  * - Added the `length` method in order to fetch the number of items
+  *   stored in a storage engine.
+  * - Added the `key` method in order to be able to fetch the name of the
+  *   nth key in a storage engine.
   */
 
 /**
@@ -284,6 +298,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			set: setInLocal,
 			get: getFromLocal,
 			has: hasInLocal,
+			key: keyInLocal,
+			length: lengthInLocal,
 			remove: removeFromLocal,
 			clear: clearLocal
 		},
@@ -300,6 +316,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			set: setInSession,
 			get: getFromSession,
 			has: hasInSession,
+			key: keyInSession,
+			length: lengthInSession,
 			remove: removeFromSession,
 			clear: clearSession
 		},
@@ -316,6 +334,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			set: setInMemory,
 			get: getFromMemory,
 			has: hasInMemory,
+			key: keyInMemory,
+			length: lengthInMemory,
 			remove: removeFromMemory,
 			clear: clearMemory
 		}
@@ -414,6 +434,58 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	webStorage.has = function (key, allEngines) {
 		return null !== webStorage.get(key, allEngines);
+	};
+
+	/**
+	 * Return the name of the nth key in the key/value web store.
+	 * 
+	 * @param {number} num An integer representing the number of the key to 
+	 *   the return the name of.
+	 * @param {boolean} allEngines If false only the first supported storage
+	 *   engine will be queried for the given key, otherwise all engines will
+	 *   be queried in turn until a non-null value is found. Default is true.
+	 * @return {string|null} The name of the key if available or null otherwise.
+	 */
+	webStorage.key = function (index, allEngines) {
+		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
+		var length = order.length;
+		for (var ith = 0; ith < length; ++ith) {
+			var engine = webStorage[order[ith]];
+			if (engine.isSupported) {
+				var value = engine.key(index);
+				if (!allEngines || value !== null) {
+					return value;
+				}
+			}
+		}
+		return null;
+	};
+
+	/**
+	 * Returns an integer representing the number of items stored
+	 * in the key/value web store.
+	 * 
+	 * @param {number} num An integer representing the number of the key to 
+	 *   the return the name of.
+	 * @param {boolean} allEngines If false only the first supported storage
+	 *   engine will be queried for it’s length, otherwise all engines will
+	 *   be queried in turn until a non-zero value is found. Default is true.
+	 * @return {number} The number of items currently stored in 
+	 *   the key/value web store.
+	 */
+	webStorage.length = function (allEngines) {
+		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
+		var length = order.length;
+		for (var ith = 0; ith < length; ++ith) {
+			var engine = webStorage[order[ith]];
+			if (engine.isSupported) {
+				var value = engine.length();
+				if (!allEngines || value !== 0) {
+					return value;
+				} 
+			}
+		}
+		return 0;
 	};
 
 	/**
@@ -733,6 +805,108 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	function hasInMemory(key) {
 		return null !== getFromMemory(key);
+	}
+
+	/**
+	 * Return the name of the nth key in the local web store.
+	 * 
+	 * @param {number} num An integer representing the number
+	 *   of the key to the return the name of.
+	 * @return {string|null} The name of the key if available
+	 *   or null otherwise.
+	 */
+	function keyInLocal(num) {
+		if (hasLocalStorage) {
+			return localStorage.key(num);
+		}
+		return null;
+	}
+
+	/**
+	 * Return the name of the nth key in the session web store.
+	 * 
+	 * @param {number} num An integer representing the number
+	 *   of the key to the return the name of.
+	 * @return {string|null} The name of the key if available
+	 *   or null otherwise.
+	 */
+	function keyInSession(num) {
+		if (hasSessionStorage) {
+			return sessionStorage.key(num);
+		}
+		return null;
+	}
+
+	/**
+	 * Return the name of the nth key in the memory store.
+	 * 
+	 * @param {number} index An integer representing the number
+	 *   of the key to the return the name of.
+	 * @return {string|null} The name of the key if available
+	 *   or null otherwise.
+	 */
+	function keyInMemory(index) {
+		var count = 0;
+		for (var key in ram) {
+			if (ram.hasOwnProperty(key)) {
+				if (index === count) {
+					return key;
+				}
+				count += 1;
+				if (count > index) {
+					return null;
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns an integer representing the number of items stored
+	 * in the local store.
+	 * 
+	 * @return {number} The number of items currently stored in 
+	 *   the local store.
+	 */
+	function lengthInLocal() {
+		if (hasLocalStorage) {
+			return localStorage.length;
+		}
+		return 0;
+	}
+
+	/**
+	 * Returns an integer representing the number of items stored
+	 * in the session store.
+	 * 
+	 * @return {number} The number of items currently stored in 
+	 *   the session store.
+	 */
+	function lengthInSession() {
+		if (hasSessionStorage) {
+			return sessionStorage.length;
+		}
+		return 0;
+	}
+
+	/**
+	 * Returns an integer representing the number of items stored
+	 * in the in-memory store.
+	 * 
+	 * @return {number} The number of items currently stored in 
+	 *   the in-memory store.
+	 */
+	function lengthInMemory() {
+		if (Object.keys) {
+			return Object.keys(ram).length;
+		}
+		var count = 0;
+		for (var key in ram) {
+			if (ram.hasOwnProperty(key)) {
+				count += 1;
+			}
+		}
+		return count;
 	}
 
 	/**
