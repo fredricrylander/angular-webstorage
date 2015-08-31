@@ -88,7 +88,7 @@
  *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
  * @date 2015-08-31
- * @version 0.13.0
+ * @version 0.13.1
  *
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
@@ -199,6 +199,9 @@
   *   stored in a storage engine.
   * - Added the `key` method in order to be able to fetch the name of the
   *   nth key in a storage engine.
+  *
+  * v0.13.1
+  * - Refactored some strings to var's in order to help minification.
   */
 
 /**
@@ -400,8 +403,9 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			var engine = webStorage[order[ith]];
 			if (engine.isSupported) {
 				result = engine.set(key, value) || result;
-				if (!allEngines)
+				if (!allEngines) {
 					return result;
+				}
 			}
 		}
 		return result;
@@ -431,8 +435,9 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			var engine = webStorage[order[ith]];
 			if (engine.isSupported) {
 				var value = engine.get(key);
-				if (!allEngines || value !== null)
+				if (!allEngines || value !== null) {
 					return value;
+				}
 			}
 		}
 		return null;
@@ -528,8 +533,9 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			var engine = webStorage[order[ith]];
 			if (engine.isSupported) {
 				result = engine.remove(key) || result;
-				if (!allEngines)
+				if (!allEngines) {
 					return result;
+				}
 			}
 		}
 		return result;
@@ -562,8 +568,9 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			var engine = webStorage[order[ith]];
 			if (engine.isSupported) {
 				result = engine.clear() || result;
-				if (!allEngines)
+				if (!allEngines) {
 					return result;
+				}
 			}
 		}
 		return result;
@@ -581,8 +588,9 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	webStorage.errorName = function (newErrorName) {
 		var result = errorName;
 		if (typeof newErrorName !== STR_UNDEFINED) {
-			if (typeof newErrorName !== 'string')
+			if (typeof newErrorName !== 'string') {
 				return false;
+			}
 			errorName = newErrorName;
 		}
 		return result;
@@ -603,9 +611,11 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 		var result = angular.copy(order);
 		if (typeof newOrder !== STR_UNDEFINED) {
 			order = [];
-			for (var ith in newOrder)
-				if (/^(local|session|memory)$/.test(newOrder[ith]))
+			for (var ith in newOrder) {
+				if (/^(local|session|memory)$/.test(newOrder[ith])) {
 					order.push(newOrder[ith]);
+				}
+			}
 		}
 		return result;
 	};
@@ -622,8 +632,9 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	webStorage.prefix = function (newPrefix) {
 		var result = prefix;
 		if (typeof newPrefix !== STR_UNDEFINED) {
-			if (typeof newPrefix !== 'string')
+			if (typeof newPrefix !== 'string') {
 				return false;
+			}
 			prefix = newPrefix;
 		}
 		return result;
@@ -695,7 +706,11 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	function setInLocal(key, value) {
 		if (hasLocalStorage) {
-			try { localStorage.setItem(prefix + key, JSON.stringify(value)); } catch (e) { return croak(e); }
+			try { 
+				localStorage.setItem(prefix + key, JSON.stringify(value)); 
+			} catch (e) {
+				return croak(e);
+			}
 			return true;
 		}
 		return false;
@@ -715,7 +730,11 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	function setInSession(key, value) {
 		if (hasSessionStorage) {
-			try { sessionStorage.setItem(prefix + key, JSON.stringify(value)); } catch (e) { return croak(e); }
+			try {
+				sessionStorage.setItem(prefix + key, JSON.stringify(value));
+			} catch (e) {
+				return croak(e);
+			}
 			return true;
 		}
 		return false;
@@ -751,7 +770,10 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			try {
 				var value = localStorage.getItem(prefix + key);
 				return value && JSON.parse(value);
-			} catch (e) { croak(e); return null; }
+			} catch (e) {
+				croak(e);
+				return null;
+			}
 		}
 		return null;
 	}
@@ -771,7 +793,10 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			try {
 				var value = sessionStorage.getItem(prefix + key);
 				return value && JSON.parse(value);
-			} catch (e) { croak(e); return null; }
+			} catch (e) {
+				croak(e);
+				return null;
+			}
 		}
 		return null;
 	}
@@ -933,7 +958,11 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	function removeFromLocal(key) {
 		if (hasLocalStorage) {
-			try { localStorage.removeItem(prefix + key); } catch (e) { return croak(e); }
+			try {
+				localStorage.removeItem(prefix + key);
+			} catch (e) {
+				return croak(e);
+			}
 			return true;
 		}
 		return false;
@@ -948,7 +977,11 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	function removeFromSession(key) {
 		if (hasSessionStorage) {
-			try { sessionStorage.removeItem(prefix + key); } catch (e) { return croak(e); }
+			try {
+				sessionStorage.removeItem(prefix + key);
+			} catch (e) {
+				return croak(e);
+			}
 			return true;
 		}
 		return false;
@@ -982,13 +1015,23 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 		if (!!prefix) {
 			var prefixLength = prefix.length;
 			try {
-				for (var key in localStorage)
-					if (key.substr(0, prefixLength) === prefix)
+				for (var key in localStorage) {
+					if (key.substr(0, prefixLength) === prefix) {
 						localStorage.removeItem(key);
-			} catch (e) { return croak(e); }
+					}
+				}
+			} catch (e) {
+				return croak(e);
+			}
 			return true;
 		}
-		try { localStorage.clear(); } catch (e) { return croak(e); }
+
+		try {
+			localStorage.clear();
+		} catch (e) {
+			return croak(e);
+		}
+
 		return true;
 	}
 
@@ -1006,13 +1049,23 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 		if (!!prefix) {
 			var prefixLength = prefix.length;
 			try {
-				for (var key in sessionStorage)
-					if (key.substr(0, prefixLength) === prefix)
+				for (var key in sessionStorage) {
+					if (key.substr(0, prefixLength) === prefix) {
 						sessionStorage.removeItem(key);
-			} catch (e) { return croak(e); }
+					}
+				}
+			} catch (e) {
+				return croak(e);
+			}
 			return true;
 		}
-		try { sessionStorage.clear(); } catch (e) { return croak(e); }
+
+		try {
+			sessionStorage.clear();
+		} catch (e) {
+			return croak(e);
+		}
+
 		return true;
 	}
 
