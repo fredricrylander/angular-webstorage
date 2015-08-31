@@ -231,7 +231,10 @@ webStorageModule.constant('defaultSettings', {
 
 	// Name of the event that will be broadcast via the $rootScope on errors.
 	// Use errorName() to modify this value.
-	errorName: 'webStorage.notification.error'
+	errorName: 'webStorage.notification.error',
+
+	// Key used to test the availability of storage engines.
+	testKey: 'webStorage.test.key'
 });
 
 /**
@@ -239,6 +242,18 @@ webStorageModule.constant('defaultSettings', {
  */
 webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', function ($rootScope, defaultSettings) {
 	'use strict';
+
+	/**
+	 * Constant used for the string `undefined` (in order to help in minification.)
+	 * @private
+	 */
+	var STR_UNDEFINED = 'undefined';
+
+	/**
+	 * Warning displayed on `console.warn` when `add()` is used instead of `set()`.
+	 * @private
+	 */
+	var addDeprecatedWarning = 'angular-webstorage.js -- `add()` had been deprecated, use `set()` instead';
 
 	/**
 	 * Name of the event that will be broadcast over the $rootScope on errors.
@@ -358,7 +373,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @deprecated Since version 0.12.0. Will be deleted in version 1.0. Use `set` instead.
 	 */
 	webStorage.add = function (key, value, allEngines) {
-		console.warn('angular-webstorage.js -- `add()` had been deprecated, use `set()` instead');
+		console.warn(addDeprecatedWarning);
 		return webStorage.set(key, value, allEngines);
 	};
 
@@ -378,7 +393,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 *   then success is when the value was added to at least one storage engine.
 	 */
 	webStorage.set = function (key, value, allEngines) {
-		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : false;
+		allEngines = typeof allEngines !== STR_UNDEFINED ? !!allEngines : false;
 		var result = false;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
@@ -410,7 +425,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 *   else null.
 	 */
 	webStorage.get = function (key, allEngines) {
-		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
+		allEngines = typeof allEngines !== STR_UNDEFINED ? !!allEngines : true;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
 			var engine = webStorage[order[ith]];
@@ -447,7 +462,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @return {string|null} The name of the key if available or null otherwise.
 	 */
 	webStorage.key = function (index, allEngines) {
-		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
+		allEngines = typeof allEngines !== STR_UNDEFINED ? !!allEngines : true;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
 			var engine = webStorage[order[ith]];
@@ -474,7 +489,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 *   the key/value web store.
 	 */
 	webStorage.length = function (allEngines) {
-		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
+		allEngines = typeof allEngines !== STR_UNDEFINED ? !!allEngines : true;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
 			var engine = webStorage[order[ith]];
@@ -506,7 +521,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 *   engine.
 	 */
 	webStorage.remove = function (key, allEngines) {
-		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
+		allEngines = typeof allEngines !== STR_UNDEFINED ? !!allEngines : true;
 		var result = false;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
@@ -540,7 +555,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 *   storage engine.
 	 */
 	webStorage.clear = function (allEngines) {
-		allEngines = typeof allEngines !== 'undefined' ? !!allEngines : true;
+		allEngines = typeof allEngines !== STR_UNDEFINED ? !!allEngines : true;
 		var result = false;
 		var length = order.length;
 		for (var ith = 0; ith < length; ++ith) {
@@ -565,7 +580,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	webStorage.errorName = function (newErrorName) {
 		var result = errorName;
-		if (typeof newErrorName !== 'undefined') {
+		if (typeof newErrorName !== STR_UNDEFINED) {
 			if (typeof newErrorName !== 'string')
 				return false;
 			errorName = newErrorName;
@@ -586,7 +601,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	webStorage.order = function (newOrder) {
 		var result = angular.copy(order);
-		if (typeof newOrder !== 'undefined') {
+		if (typeof newOrder !== STR_UNDEFINED) {
 			order = [];
 			for (var ith in newOrder)
 				if (/^(local|session|memory)$/.test(newOrder[ith]))
@@ -606,7 +621,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	webStorage.prefix = function (newPrefix) {
 		var result = prefix;
-		if (typeof newPrefix !== 'undefined') {
+		if (typeof newPrefix !== STR_UNDEFINED) {
 			if (typeof newPrefix !== 'string')
 				return false;
 			prefix = newPrefix;
@@ -628,7 +643,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @deprecated Since version 0.12.0. Will be deleted in version 1.0. Use `setInLocal` instead.
 	 */
 	function addToLocal(key, value) {
-		console.warn('angular-webstorage.js -- `add()` had been deprecated, use `set()` instead');
+		console.warn(addDeprecatedWarning);
 		return setInLocal(key, value);
 	}
 
@@ -646,7 +661,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @deprecated Since version 0.12.0. Will be deleted in version 1.0. Use `setInSession` instead.
 	 */
 	function addToSession(key, value) {
-		console.warn('angular-webstorage.js -- `add()` had been deprecated, use `set()` instead');
+		console.warn(addDeprecatedWarning);
 		return setInSession(key, value);
 	}
 
@@ -662,7 +677,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @deprecated Since version 0.12.0. Will be deleted in version 1.0. Use `setInMemory` instead.
 	 */
 	function addToMemory(key, value) {
-		console.warn('angular-webstorage.js -- `add()` had been deprecated, use `set()` instead');
+		console.warn(addDeprecatedWarning);
 		return setInMemory(key, value);
 	}
 
@@ -1022,8 +1037,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	function testLocalStorage() {
 		try {
-			localStorage.setItem(prefix + 'angular.webStorage.test', true);
-			localStorage.removeItem(prefix + 'angular.webStorage.test');
+			localStorage.setItem(prefix + defaultSettings.testKey, defaultSettings.testKey);
+			localStorage.removeItem(prefix + defaultSettings.testKey);
 			return true;
 		} catch (e) {
 			return false;
@@ -1038,8 +1053,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 */
 	function testSessionStorage() {
 		try {
-			sessionStorage.setItem(prefix + 'angular.webStorage.test', true);
-			sessionStorage.removeItem(prefix + 'angular.webStorage.test');
+			sessionStorage.setItem(prefix + defaultSettings.testKey, defaultSettings.testKey);
+			sessionStorage.removeItem(prefix + defaultSettings.testKey);
 			return true;
 		} catch (e) {
 			return false;
