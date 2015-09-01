@@ -31,26 +31,28 @@ The service provides the following generic methods:
 It also provides the following direct APIs:
 
 `webStorage.local`
-* `isSupported`     -- boolean flag indicating client support status (local storage)
-* `add(key, value)` -- [DEPRECATED: use `set`] add a value to storage under the specific key (local storage)
-* `set(key, value)` -- add or update a value in storage under the specific key (local storage)
-* `get(key)`        -- return the specified value (local storage)
-* `has(key)`        -- checks if the given key exists (local storage)
-* `key(index)`      -- return the name of the nth key (local storage)
-* `length()`        -- returns the number of items in storage (local storage)
-* `remove(key)`     -- remove a key/value pair from storage (local storage)
-* `clear()`         -- remove all key/value pairs from storage (local storage)
+* `isSupported`          -- boolean flag indicating client support status (local storage)
+* `add(key, value)`      -- [DEPRECATED: use `set`] add a value to storage under the specific key (local storage)
+* `set(key, value)`      -- add or update a value in storage under the specific key (local storage)
+* `get(key)`             -- return the specified value (local storage)
+* `has(key)`             -- checks if the given key exists (local storage)
+* `key(index)`           -- return the name of the nth key (local storage)
+* `length()`             -- returns the number of items in storage (local storage)
+* `remove(key)`          -- remove a key/value pair from storage (local storage)
+* `clear()`              -- remove all key/value pairs from storage (local storage)
+* `isPolyfilled(remove)` -- returns `true` if local storage is polyfilled, if `remove` is true then the polyfill is removed (local storage)
 
 `webStorage.session`
-* `isSupported`     -- boolean flag indicating client support status (session storage)
-* `add(key, value)` -- [DEPRECATED: use `set`] add a value to storage under the specific key (session storage)
-* `set(key, value)` -- add or set a value in storage under the specific key (session storage)
-* `get(key)`        -- return the specified value (session storage)
-* `has(key)`        -- checks if the given key exists (session storage)
-* `key(index)`      -- return the name of the nth key (session storage)
-* `length()`        -- returns the number of items in storage (session storage)
-* `remove(key)`     -- remove a key/value pair from storage (session storage)
-* `clear()`         -- remove all key/value pairs from storage (session storage)
+* `isSupported`          -- boolean flag indicating client support status (session storage)
+* `add(key, value)`      -- [DEPRECATED: use `set`] add a value to storage under the specific key (session storage)
+* `set(key, value)`      -- add or set a value in storage under the specific key (session storage)
+* `get(key)`             -- return the specified value (session storage)
+* `has(key)`             -- checks if the given key exists (session storage)
+* `key(index)`           -- return the name of the nth key (session storage)
+* `length()`             -- returns the number of items in storage (session storage)
+* `remove(key)`          -- remove a key/value pair from storage (session storage)
+* `clear()`              -- remove all key/value pairs from storage (session storage)
+* `isPolyfilled(remove)` -- returns `true` if session storage is polyfilled, if `remove` is true then the polyfill is removed (session storage)
 
 `webStorage.memory`
 * `isSupported`     -- boolean true, the in-memory storage is always supported
@@ -62,15 +64,16 @@ It also provides the following direct APIs:
 * `length()`        -- returns the number of items in storage (in-memory storage)
 * `remove(key)`     -- remove a key/value pair from storage (in-memory storage)
 * `clear()`         -- remove all key/value pairs from storage (in-memory storage)
+* `isPolyfilled()`  -- always returns `false` (in-memory storage)
 
 ## Author
 Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
 
 ## Date
-2015-08-31
+2015-09-01
 
 ## Module Version
-0.13.1
+0.14.0
 
 ## Requirements
 This module was originally built for AngularJS v1.0.5.
@@ -170,6 +173,12 @@ Add `webStorageModule` to your app's dependencies. Then inject `webStorage` into
 
 * v0.13.1
    - Refactored some strings to var's in order to help minification.
+
+* v0.14.0
+   - Added routines to check if local and/or session storage has been
+     polyfilled or not. It is also possible to use the same routines to
+     remove the polyfill functionality. `isPolyfilled(remove)` is now
+     defined on `webStorage.local` and `webStorage.session`.
 
 ## License
     The MIT License

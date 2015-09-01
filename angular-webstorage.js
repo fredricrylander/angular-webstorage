@@ -41,26 +41,28 @@
  * It also provides the following direct APIs:
  *
  * webStorage.local
- * - isSupported     -- boolean flag indicating client support status (local storage)
- * - add(key, value) -- [DEPRECATED: use `set`] add a value to storage under the specific key (local storage)
- * - set(key, value) -- add or update a value in storage under the specific key (local storage)
- * - get(key)        -- return the specified value (local storage)
- * - has(key)        -- checks if the given key exists (local storage)
- * - key(index)      -- return the name of the nth key (local storage)
- * - length()        -- returns the number of items in storage (local storage)
- * - remove(key)     -- remove a key/value pair from storage (local storage)
- * - clear()         -- remove all key/value pairs from storage (local storage)
+ * - isSupported          -- boolean flag indicating client support status (local storage)
+ * - add(key, value)      -- [DEPRECATED: use `set`] add a value to storage under the specific key (local storage)
+ * - set(key, value)      -- add or update a value in storage under the specific key (local storage)
+ * - get(key)             -- return the specified value (local storage)
+ * - has(key)             -- checks if the given key exists (local storage)
+ * - key(index)           -- return the name of the nth key (local storage)
+ * - length()             -- returns the number of items in storage (local storage)
+ * - remove(key)          -- remove a key/value pair from storage (local storage)
+ * - clear()              -- remove all key/value pairs from storage (local storage)
+ * - isPolyfilled(remove) -- returns `true` if local storage is polyfilled, if `remove` is true then the polyfill is removed (local storage)
  *
  * webStorage.session
- * - isSupported     -- boolean flag indicating client support status (session storage)
- * - add(key, value) -- [DEPRECATED: use `set`] add a value to storage under the specific key (session storage)
- * - set(key, value) -- add or set a value in storage under the specific key (session storage)
- * - get(key)        -- return the specified value (session storage)
- * - has(key)        -- checks if the given key exists (session storage)
- * - key(index)      -- return the name of the nth key (session storage)
- * - length()        -- returns the number of items in storage (session storage)
- * - remove(key)     -- remove a key/value pair from storage (session storage)
- * - clear()         -- remove all key/value pairs from storage (session storage)
+ * - isSupported          -- boolean flag indicating client support status (session storage)
+ * - add(key, value)      -- [DEPRECATED: use `set`] add a value to storage under the specific key (session storage)
+ * - set(key, value)      -- add or set a value in storage under the specific key (session storage)
+ * - get(key)             -- return the specified value (session storage)
+ * - has(key)             -- checks if the given key exists (session storage)
+ * - key(index)           -- return the name of the nth key (session storage)
+ * - length()             -- returns the number of items in storage (session storage)
+ * - remove(key)          -- remove a key/value pair from storage (session storage)
+ * - clear()              -- remove all key/value pairs from storage (session storage)
+ * - isPolyfilled(remove) -- returns `true` if session storage is polyfilled, if `remove` is true then the polyfill is removed (session storage)
  *
  * webStorage.memory
  * - isSupported     -- boolean true, the in-memory storage is always supported
@@ -72,6 +74,7 @@
  * - length()        -- returns the number of items in storage (in-memory storage)
  * - remove(key)     -- remove a key/value pair from storage (in-memory storage)
  * - clear()         -- remove all key/value pairs from storage (in-memory storage)
+ * - isPolyfilled()  -- always returns `false` (in-memory storage)
  *
  *
  * Requirements
@@ -87,8 +90,8 @@
  * </code>
  *
  * @author Fredric Rylander, https://github.com/fredricrylander/angular-webstorage
- * @date 2015-08-31
- * @version 0.13.1
+ * @date 2015-09-01
+ * @version 0.14.0
  *
  * @contributor Paulo Cesar (https://github.com/pocesar)
  * @contributor David Chang (https://github.com/hasdavidc)
@@ -202,6 +205,12 @@
   *
   * v0.13.1
   * - Refactored some strings to var's in order to help minification.
+  *
+  * v0.14.0
+  * - Added routines to check if local and/or session storage has been
+  *   polyfilled or not. It is also possible to use the same routines to
+  *   remove the polyfill functionality. `isPolyfilled(remove)` is now
+  *   defined on `webStorage.local` and `webStorage.session`.
   */
 
 /**
@@ -278,6 +287,18 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	var hasSessionStorage = testSessionStorage();
 
 	/**
+	 * Boolean flag indicating if local storage has been polyfilled by using cookies.
+	 * @private
+	 */
+	var isLocalStoragePolyfilled = false;
+	
+	/**
+	 * Boolean flag indicating if session storage has been polyfilled by using cookies.
+	 * @private
+	 */
+	var isSessionStoragePolyfilled = false;
+	
+	/**
 	 * Reference to the order of preference by which storage engines are iterated.
 	 * @see order
 	 * @private
@@ -319,7 +340,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			key: keyInLocal,
 			length: lengthInLocal,
 			remove: removeFromLocal,
-			clear: clearLocal
+			clear: clearLocal,
+			isPolyfilled: isLocalPolyfilled,
 		},
 
 		/**
@@ -337,7 +359,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			key: keyInSession,
 			length: lengthInSession,
 			remove: removeFromSession,
-			clear: clearSession
+			clear: clearSession,
+			isPolyfilled: isSessionPolyfilled,
 		},
 
 		/**
@@ -355,7 +378,8 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 			key: keyInMemory,
 			length: lengthInMemory,
 			remove: removeFromMemory,
-			clear: clearMemory
+			clear: clearMemory,
+			isPolyfilled: false
 		}
 	};
 
@@ -1089,6 +1113,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @private
 	 */
 	function testLocalStorage() {
+		polyfillLocalStorage();
 		try {
 			localStorage.setItem(prefix + defaultSettings.testKey, defaultSettings.testKey);
 			localStorage.removeItem(prefix + defaultSettings.testKey);
@@ -1105,6 +1130,7 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 	 * @private
 	 */
 	function testSessionStorage() {
+		polyfillSessionStorage();
 		try {
 			sessionStorage.setItem(prefix + defaultSettings.testKey, defaultSettings.testKey);
 			sessionStorage.removeItem(prefix + defaultSettings.testKey);
@@ -1125,106 +1151,155 @@ webStorageModule.factory('webStorage', ['$rootScope', 'defaultSettings', functio
 		return false;
 	}
 
+	/**
+	 * Polyfilling the localStorage API by setting cookies on the document.
+	 * @private
+	 */
+	function polyfillLocalStorage() {
+		try {
+			/* jshint -W001 */// 'hasOwnProperty' is a really bad name.
+			/* jshint -W014 */// Bad line break before +.
+		
+			// Support for localStorage, compatible with old browsers, like Internet
+			// Explorer < 8 (tested and working even in Internet Explorer 6).
+			// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
+			if (!window.localStorage) {
+				window.localStorage = {
+					getItem : function(sKey) {
+						if (!sKey || !this.hasOwnProperty(sKey)) {
+							return null;
+						}
+						return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)"
+								+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&")
+								+ "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
+					},
+					key : function(nKeyId) {
+						return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "")
+								.split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
+					},
+					setItem : function(sKey, sValue) {
+						if (!sKey) {
+							return;
+						}
+						document.cookie = escape(sKey) + "=" + escape(sValue)
+								+ "; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/";
+						this.length = document.cookie.match(/\=/g).length;
+					},
+					length : 0,
+					removeItem : function(sKey) {
+						if (!sKey || !this.hasOwnProperty(sKey)) {
+							return;
+						}
+						document.cookie = escape(sKey)
+								+ "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+						this.length--;
+					},
+					hasOwnProperty : function(sKey) {
+						return (new RegExp("(?:^|;\\s*)"
+								+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\="))
+								.test(document.cookie);
+					}
+				};
+				window.localStorage.length = (document.cookie.match(/\=/g) || window.localStorage).length;
+				isLocalStoragePolyfilled = true;
+			}
+		} catch (e) {
+			// Protected Mode on IE? There's really nothing to do at this stage.
+		}
+	}
+	
+	/**
+	 * Polyfilling the sessionStorage API by setting cookies on the document.
+	 * @private
+	 */
+	function polyfillSessionStorage() {
+		try {
+			/* jshint -W001 */// 'hasOwnProperty' is a really bad name.
+			/* jshint -W014 */// Bad line break before +.
+		
+			// Support for sessionStorage, compatible with old browsers, like Internet
+			// Explorer < 8 (tested and working even in Internet Explorer 6).
+			// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
+			if (!window.sessionStorage) {
+				window.sessionStorage = {
+					getItem : function(sKey) {
+						if (!sKey || !this.hasOwnProperty(sKey)) {
+							return null;
+						}
+						return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)"
+								+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&")
+								+ "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
+					},
+					key : function(nKeyId) {
+						return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "")
+								.split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
+					},
+					setItem : function(sKey, sValue) {
+						if (!sKey) {
+							return;
+						}
+						document.cookie = escape(sKey) + "=" + escape(sValue) + "; path=/";
+						this.length = document.cookie.match(/\=/g).length;
+					},
+					length : 0,
+					removeItem : function(sKey) {
+						if (!sKey || !this.hasOwnProperty(sKey)) {
+							return;
+						}
+						document.cookie = escape(sKey)
+								+ "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+						this.length--;
+					},
+					hasOwnProperty : function(sKey) {
+						return (new RegExp("(?:^|;\\s*)"
+								+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\="))
+								.test(document.cookie);
+					}
+				};
+				window.sessionStorage.length = (document.cookie.match(/\=/g) || window.sessionStorage).length;
+				isSessionStoragePolyfilled = true;
+			}
+		
+		} catch (e) {
+			// Protected Mode on IE? There's really nothing to do at this stage.
+		}
+	}
+	
+	/**
+	 * Returns the polyfill status of local storage: `true` if local storage has been
+	 * polyfilled, else `false`.
+	 * 
+	 * @param {boolean} removePolyfill If `removePolyfill` is `true` and local storage
+	 *    is currently polyfilled then `window.localStorage` will be set to `null`. 
+	 * @return {boolean} `true` if local storage is polyfilled by setting cookies on
+	 *   the document, else `false`.
+	 */
+	function isLocalPolyfilled(removePolyfill) {
+		var oldValue = isLocalStoragePolyfilled;
+		if (removePolyfill === true && isLocalStoragePolyfilled) {
+			window.localStorage = null;
+			isLocalStoragePolyfilled = false;
+		}
+		return oldValue;
+	}
+	
+	/**
+	 * Returns the polyfill status of session storage: `true` if session storage has been
+	 * polyfilled, else `false`.
+	 * 
+	 * @param {boolean} removePolyfill If `removePolyfill` is `true` and session storage
+	 *    is currently polyfilled then `window.sessionStorage` will be set to `null`. 
+	 * @return {boolean} `true` if session storage is polyfilled by setting cookies on
+	 *   the document, else `false`.
+	 */
+	function isSessionPolyfilled(removePolyfill) {
+		var oldValue = isSessionStoragePolyfilled;
+		if (removePolyfill === true && isSessionStoragePolyfilled) {
+			window.sessionStorage = null;
+			isLocalStoragePolyfilled = false;
+		}
+		return oldValue;
+	}
+
 	return webStorage;
 }]);
-
-
-/**
- * Polyfilling the localStorage and sessionStorage APIs by setting cookies
- * on the document.
- *
- * Source from: https://developer.mozilla.org/en-US/docs/DOM/Storage
- */
-
-try {
-	/* jshint -W001 */// 'hasOwnProperty' is a really bad name.
-	/* jshint -W014 */// Bad line break before +.
-
-	// Support for localStorage, compatible with old browsers, like Internet
-	// Explorer < 8 (tested and working even in Internet Explorer 6).
-	// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
-	if (!window.localStorage) {
-		window.localStorage = {
-			getItem : function(sKey) {
-				if (!sKey || !this.hasOwnProperty(sKey)) {
-					return null;
-				}
-				return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)"
-						+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&")
-						+ "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
-			},
-			key : function(nKeyId) {
-				return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "")
-						.split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
-			},
-			setItem : function(sKey, sValue) {
-				if (!sKey) {
-					return;
-				}
-				document.cookie = escape(sKey) + "=" + escape(sValue)
-						+ "; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/";
-				this.length = document.cookie.match(/\=/g).length;
-			},
-			length : 0,
-			removeItem : function(sKey) {
-				if (!sKey || !this.hasOwnProperty(sKey)) {
-					return;
-				}
-				document.cookie = escape(sKey)
-						+ "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-				this.length--;
-			},
-			hasOwnProperty : function(sKey) {
-				return (new RegExp("(?:^|;\\s*)"
-						+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\="))
-						.test(document.cookie);
-			}
-		};
-		window.localStorage.length = (document.cookie.match(/\=/g) || window.localStorage).length;
-	}
-
-	// Support for sessionStorage, compatible with old browsers, like Internet
-	// Explorer < 8 (tested and working even in Internet Explorer 6).
-	// Source From: https://developer.mozilla.org/en-US/docs/DOM/Storage
-	if (!window.sessionStorage) {
-		window.sessionStorage = {
-			getItem : function(sKey) {
-				if (!sKey || !this.hasOwnProperty(sKey)) {
-					return null;
-				}
-				return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)"
-						+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&")
-						+ "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
-			},
-			key : function(nKeyId) {
-				return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "")
-						.split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
-			},
-			setItem : function(sKey, sValue) {
-				if (!sKey) {
-					return;
-				}
-				document.cookie = escape(sKey) + "=" + escape(sValue) + "; path=/";
-				this.length = document.cookie.match(/\=/g).length;
-			},
-			length : 0,
-			removeItem : function(sKey) {
-				if (!sKey || !this.hasOwnProperty(sKey)) {
-					return;
-				}
-				document.cookie = escape(sKey)
-						+ "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-				this.length--;
-			},
-			hasOwnProperty : function(sKey) {
-				return (new RegExp("(?:^|;\\s*)"
-						+ escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\="))
-						.test(document.cookie);
-			}
-		};
-		window.sessionStorage.length = (document.cookie.match(/\=/g) || window.sessionStorage).length;
-	}
-
-} catch (e) {
-	// Protected Mode on IE? There's really nothing to do at this stage.
-}
