@@ -1,0 +1,22 @@
+{
+  "name": "angular-webstorage",
+  "version": "0.14.0",
+  "main": "angular-webstorage.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/kejwmen/angular-webstorage.git"
+  },
+  "license": "MIT",
+  "files": [
+    "angular-webstorage.js",
+    "angular-webstorage.min.js",
+    "angular-webstorage-utils.js",
+    "README.md"
+  ],
+  "dependencies": {
+    "angular": ">=1.0.0 <2.0.0"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  }
+}
