@@ -1,3 +1,9 @@
+![No Maintenance Intended](https://img.shields.io/maintenance/no/2015.svg)
+
+[DEPRECATED]
+============
+This package has been deprecated and is no longer maintained as of 2015.
+
 WebStorage Service for AngularJS
 ================================
 
